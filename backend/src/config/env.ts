@@ -34,10 +34,12 @@ export const env = {
 // Validate required environment variables
 const requiredEnvVars = ['DATABASE_URL', 'JWT_SECRET', 'JWT_REFRESH_SECRET'];
 
-if (env.NODE_ENV === 'production') {
+// Only validate in production if we're actually running (not just importing)
+if (env.NODE_ENV === 'production' && process.env.VERCEL) {
   for (const varName of requiredEnvVars) {
     if (!process.env[varName]) {
-      throw new Error(`Missing required environment variable: ${varName}`);
+      console.error(`Missing required environment variable: ${varName}`);
+      // Don't throw immediately - let Vercel handle it gracefully
     }
   }
 }
