@@ -23,6 +23,7 @@ import {
   Brightness4,
   Brightness7,
   Menu as MenuIcon,
+  Search,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
@@ -41,6 +42,7 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
   const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
+  const [searchOpen, setSearchOpen] = useState(false);
   const user = authService.getStoredUser();
 
   const { data: unreadCount } = useQuery({
@@ -141,6 +143,19 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
           </Box>
         </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Tooltip title="Search">
+            <IconButton
+              color="inherit"
+              onClick={() => setSearchOpen(true)}
+              sx={{
+                '&:hover': {
+                  background: alpha(theme.palette.common.white, 0.1),
+                },
+              }}
+            >
+              <Search />
+            </IconButton>
+          </Tooltip>
           <Tooltip title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}>
             <FormControlLabel
               control={
@@ -263,6 +278,7 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
           </MenuItem>
         </Menu>
       </Toolbar>
+      <GlobalSearch open={searchOpen} onClose={() => setSearchOpen(false)} />
     </AppBar>
   );
 };
