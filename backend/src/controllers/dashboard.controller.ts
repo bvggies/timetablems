@@ -373,7 +373,8 @@ async function getLecturerWorkloadData(userId: string, semesterId: string | unde
 
   const distribution: { [key: string]: number } = {};
   allocations.forEach((alloc) => {
-    const deptName = alloc.Course.Department?.name || 'Other';
+    const course = alloc.Course as any;
+    const deptName = course.Department?.name || 'Other';
     distribution[deptName] = (distribution[deptName] || 0) + 1;
   });
 
