@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import GlobalSearch from '../GlobalSearch';
 import {
   AppBar,
   Toolbar,

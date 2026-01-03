@@ -232,6 +232,7 @@ app.use('/api/exams', examsRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/import', importRoutes);
+app.use('/api/search', searchRoutes);
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {
