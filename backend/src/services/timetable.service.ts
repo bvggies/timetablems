@@ -175,7 +175,7 @@ export const checkConflicts = async (
           ],
         },
         include: {
-          course: {
+          Course: {
             include: {
               registrations: {
                 where: {
@@ -190,11 +190,11 @@ export const checkConflicts = async (
       });
 
       for (const conflict of studentConflicts) {
-        const overlappingStudents = conflict.course.registrations.length;
+        const overlappingStudents = conflict.Course.registrations.length;
         if (overlappingStudents > 0) {
           conflicts.push({
             type: 'STUDENT',
-            message: `${overlappingStudents} student(s) are registered for both ${course.code} and ${conflict.course.code}`,
+            message: `${overlappingStudents} student(s) are registered for both ${course.code} and ${conflict.Course.code}`,
             conflictingSessionId: conflict.id,
           });
         }
@@ -225,7 +225,7 @@ export const generateTimetable = async (
         semesterId: options.semesterId,
       },
       include: {
-        course: {
+        Course: {
           include: {
             department: true,
             level: true,
@@ -237,7 +237,7 @@ export const generateTimetable = async (
             },
           },
         },
-        lecturer: {
+        User: {
           include: {
             lecturerAvailability: true,
           },
@@ -279,8 +279,8 @@ export const generateTimetable = async (
 
     // Generate sessions for each allocation
     for (const allocation of allocations) {
-      const course = allocation.course;
-      const lecturer = allocation.lecturer;
+      const course = allocation.Course;
+      const lecturer = allocation.User;
       const expectedSize = course.registrations.length || course.expectedSize;
 
       // Find suitable venue
@@ -294,7 +294,7 @@ export const generateTimetable = async (
 
       // Check lecturer availability
       const lecturerAvailabilities = lecturer.lecturerAvailability.filter(
-        (avail) => options.daysOfWeek.includes(avail.dayOfWeek)
+        (avail: { dayOfWeek: number }) => options.daysOfWeek.includes(avail.dayOfWeek)
       );
 
       if (lecturerAvailabilities.length === 0) {
@@ -369,6 +369,7 @@ export const generateTimetable = async (
           semesterId: options.semesterId,
           status: 'DRAFT',
           version: 1,
+          updatedAt: new Date(),
         })),
       });
       result.sessionsCreated = sessionsToCreate.length;
