@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,6 +5,324 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Announcement {
+   id           String      @id @default(cuid())
+   createdById  String
+   scope        String
+   departmentId String?
+   levelId      String?
+   title        String
+   message      String
+   createdAt    DateTime    @default(now())
+   updatedAt    DateTime    @updatedAt
+  User         User        @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  Department   Department? @relation(fields: [departmentId], references: [id])
+  Level        Level?      @relation(fields: [levelId], references: [id])
+
+  @@index([createdAt])
+  @@index([scope])
+}
+
+model AuditLog {
+   id        String   @id @default(cuid())
+   actorId   String
+   action    String
+   entity    String
+   entityId  String?
+   metadata  String?
+   ipAddress String?
+   userAgent String?
+   createdAt DateTime @default(now())
+  User      User     @relation(fields: [actorId], references: [id])
+
+  @@index([actorId])
+  @@index([createdAt])
+  @@index([entity])
+}
+
+model Course {
+   id                        String                      @id @default(cuid())
+  code                      String                      @unique
+  title                     String
+  credits                   Int
+  description               String?
+  departmentId              String
+  levelId                   String
+  expectedSize              Int                         @default(50)
+   createdAt                 DateTime                    @default(now())
+   updatedAt                 DateTime                    @updatedAt
+  Department                Department                  @relation(fields: [departmentId], references: [id])
+  Level                     Level                       @relation(fields: [levelId], references: [id])
+  CourseAllocation          CourseAllocation[]
+  ExamSession               ExamSession[]
+  StudentCourseRegistration StudentCourseRegistration[]
+  TimetableSession          TimetableSession[]
+
+  @@index([code])
+  @@index([departmentId])
+  @@index([levelId])
+}
+
+model CourseAllocation {
+   id         String   @id @default(cuid())
+  courseId   String
+  lecturerId String
+  semesterId String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  Course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  User       User     @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+  Semester   Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+
+  @@unique([courseId, semesterId])
+  @@index([lecturerId])
+  @@index([semesterId])
+}
+
+model Department {
+   id           String         @id @default(cuid())
+  code         String         @unique
+  name         String
+  description  String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  Announcement Announcement[]
+  Course       Course[]
+  User         User[]
+}
+
+model ExamSession {
+   id         String   @id @default(cuid())
+  courseId   String
+  venueId    String
+  semesterId String
+  date       DateTime
+  startTime  String
+  endTime    String
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  Course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  Semester   Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  Venue      Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@index([date])
+  @@index([semesterId])
+  @@index([venueId])
+}
+
+model LecturerAvailability {
+   id         String   @id @default(cuid())
+  lecturerId String
+  dayOfWeek  Int
+  startTime  String
+  endTime    String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime
+  User       User     @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+
+  @@unique([lecturerId, dayOfWeek, startTime, endTime])
+  @@index([lecturerId])
+}
+
+model Level {
+   id           String         @id @default(cuid())
+  code         String         @unique
+  name         String
+  description  String?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime
+  Announcement Announcement[]
+  Course       Course[]
+  User         User[]
+}
+
+model Notification {
+   id          String           @id @default(cuid())
+  recipientId String
+  title       String
+  message     String
+  type        NotificationType
+  readAt      DateTime?
+  metadata    String?
+  createdAt   DateTime         @default(now())
+  User        User             @relation(fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@index([createdAt])
+  @@index([readAt])
+  @@index([recipientId])
+}
+
+model Semester {
+   id                        String                      @id @default(cuid())
+  year                      Int
+  term                      String
+  startDate                 DateTime
+  endDate                   DateTime
+  status                    String                      @default("UPCOMING")
+   createdAt                 DateTime                    @default(now())
+   updatedAt                 DateTime                    @updatedAt
+  CourseAllocation          CourseAllocation[]
+  ExamSession               ExamSession[]
+  StudentCourseRegistration StudentCourseRegistration[]
+  TimetableSession          TimetableSession[]
+
+  @@unique([year, term])
+  @@index([status])
+}
+
+model StudentCourseRegistration {
+   id           String    @id @default(cuid())
+  studentId    String
+  courseId     String
+  semesterId   String
+  registeredAt DateTime  @default(now())
+  droppedAt    DateTime?
+  Course       Course    @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  Semester     Semester  @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  User         User      @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, courseId, semesterId])
+  @@index([semesterId])
+  @@index([studentId])
+}
+
+model SupportTicket {
+   id         String         @id @default(cuid())
+  userId     String
+  category   TicketCategory
+  subject    String
+  message    String
+  screenshot String?
+  status     TicketStatus   @default(OPEN)
+  adminNotes String?
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime
+  resolvedAt DateTime?
+  User       User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([category])
+  @@index([createdAt])
+  @@index([status])
+  @@index([userId])
+}
+
+model TimetableSession {
+   id         String        @id @default(cuid())
+  courseId   String
+  lecturerId String
+  venueId    String
+  semesterId String
+  dayOfWeek  Int
+  startTime  String
+  endTime    String
+  status     SessionStatus @default(DRAFT)
+  notes      String?
+  version    Int           @default(1)
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime
+  Course     Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  User       User          @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
+  Semester   Semester      @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  Venue      Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, semesterId, dayOfWeek, startTime])
+  @@index([dayOfWeek])
+  @@index([lecturerId])
+  @@index([semesterId])
+  @@index([status])
+  @@index([venueId])
+}
+
+model TimetableVersion {
+   id          String    @id @default(cuid())
+  semesterId  String
+  version     Int
+  publishedAt DateTime?
+  publishedBy String?
+  notes       String?
+  createdAt   DateTime  @default(now())
+
+  @@unique([semesterId, version])
+  @@index([semesterId])
+}
+
+model User {
+   id                        String                      @id @default(cuid())
+  pugId                     String                      @unique
+  email                     String                      @unique
+  passwordHash              String
+  firstName                 String
+  lastName                  String
+  phone                     String?
+  profilePhoto              String?
+  role                      UserRole                    @default(STUDENT)
+  status                    UserStatus                  @default(ACTIVE)
+  departmentId              String?
+  levelId                   String?
+   createdAt                 DateTime                    @default(now())
+   updatedAt                 DateTime                    @updatedAt
+  Announcement              Announcement[]
+  AuditLog                  AuditLog[]
+  CourseAllocation          CourseAllocation[]
+  LecturerAvailability      LecturerAvailability[]
+  Notification              Notification[]
+  StudentCourseRegistration StudentCourseRegistration[]
+  SupportTicket             SupportTicket[]
+  TimetableSession          TimetableSession[]
+  Department                Department?                 @relation(fields: [departmentId], references: [id])
+  Level                     Level?                      @relation(fields: [levelId], references: [id])
+
+  @@index([departmentId])
+  @@index([email])
+  @@index([levelId])
+  @@index([pugId])
+  @@index([role])
+}
+
+model Venue {
+   id               String             @id @default(cuid())
+  name             String
+  location         String?
+  capacity         Int
+  type             String
+  resources        String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime
+  ExamSession      ExamSession[]
+  TimetableSession TimetableSession[]
+
+  @@index([name])
+  @@index([type])
+}
+
+enum NotificationType {
+  TIMETABLE_CHANGE
+  CLASS_REMINDER
+  ANNOUNCEMENT
+  SYSTEM
+}
+
+enum SessionStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+}
+
+enum TicketCategory {
+  TECHNICAL
+  ACADEMIC
+  TIMETABLE
+  OTHER
+}
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
 }
 
 enum UserRole {
@@ -21,340 +336,3 @@ enum UserStatus {
   INACTIVE
   SUSPENDED
 }
-
-enum SessionStatus {
-  DRAFT
-  PUBLISHED
-  CANCELLED
-}
-
-enum TicketStatus {
-  OPEN
-  IN_PROGRESS
-  RESOLVED
-  CLOSED
-}
-
-enum TicketCategory {
-  TECHNICAL
-  ACADEMIC
-  TIMETABLE
-  OTHER
-}
-
-enum NotificationType {
-  TIMETABLE_CHANGE
-  CLASS_REMINDER
-  ANNOUNCEMENT
-  SYSTEM
-}
-
-model User {
-  id            String      @id @default(cuid())
-  pugId         String      @unique
-  email         String      @unique
-  passwordHash  String
-  firstName     String
-  lastName      String
-  phone         String?
-  profilePhoto  String?
-  role          UserRole    @default(STUDENT)
-  status        UserStatus  @default(ACTIVE)
-  departmentId  String?
-  levelId       String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-
-  department    Department? @relation(fields: [departmentId], references: [id])
-  level         Level?      @relation(fields: [levelId], references: [id])
-
-  // Relations
-  lecturerAvailability LecturerAvailability[]
-  courseAllocations    CourseAllocation[]
-  studentRegistrations StudentCourseRegistration[]
-  timetableSessions    TimetableSession[]
-  notifications        Notification[]
-  supportTickets       SupportTicket[]
-  auditLogs            AuditLog[]           @relation("ActorUser")
-  announcements        Announcement[]
-
-  @@index([email])
-  @@index([pugId])
-  @@index([role])
-  @@index([departmentId])
-  @@index([levelId])
-}
-
-model Department {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  users       User[]
-  courses     Course[]
-  announcements Announcement[]
-}
-
-model Level {
-  id          String   @id @default(cuid())
-  code        String   @unique
-  name        String
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  users       User[]
-  courses     Course[]
-  announcements Announcement[]
-}
-
-model Semester {
-  id          String   @id @default(cuid())
-  year        Int
-  term        String   // e.g., "Fall", "Spring", "Summer"
-  startDate   DateTime
-  endDate     DateTime
-  status      String   @default("UPCOMING") // UPCOMING, ACTIVE, COMPLETED
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  courseAllocations    CourseAllocation[]
-  studentRegistrations StudentCourseRegistration[]
-  timetableSessions    TimetableSession[]
-  examSessions         ExamSession[]
-
-  @@unique([year, term])
-  @@index([status])
-}
-
-model Course {
-  id            String   @id @default(cuid())
-  code          String   @unique
-  title         String
-  credits       Int
-  description   String?
-  departmentId  String
-  levelId       String
-  expectedSize    Int     @default(50)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  department    Department @relation(fields: [departmentId], references: [id])
-  level         Level      @relation(fields: [levelId], references: [id])
-
-  allocations   CourseAllocation[]
-  registrations StudentCourseRegistration[]
-  timetableSessions TimetableSession[]
-  examSessions  ExamSession[]
-
-  @@index([code])
-  @@index([departmentId])
-  @@index([levelId])
-}
-
-model LecturerAvailability {
-  id          String   @id @default(cuid())
-  lecturerId  String
-  dayOfWeek   Int      // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  startTime   String   // HH:mm format
-  endTime     String   // HH:mm format
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  lecturer    User     @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
-
-  @@unique([lecturerId, dayOfWeek, startTime, endTime])
-  @@index([lecturerId])
-}
-
-model Venue {
-  id          String   @id @default(cuid())
-  name        String
-  location    String?
-  capacity    Int
-  type        String   // "HALL", "LAB", "SEMINAR", "OTHER"
-  resources   String?  // JSON string for resources like ["projector", "whiteboard"]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  timetableSessions TimetableSession[]
-  examSessions      ExamSession[]
-
-  @@index([name])
-  @@index([type])
-}
-
-model CourseAllocation {
-  id          String   @id @default(cuid())
-  courseId    String
-  lecturerId  String
-  semesterId  String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lecturer    User     @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
-  semester    Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
-
-  @@unique([courseId, semesterId])
-  @@index([lecturerId])
-  @@index([semesterId])
-}
-
-model StudentCourseRegistration {
-  id          String   @id @default(cuid())
-  studentId   String
-  courseId    String
-  semesterId  String
-  registeredAt DateTime @default(now())
-  droppedAt   DateTime?
-
-  student     User     @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  semester    Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
-
-  @@unique([studentId, courseId, semesterId])
-  @@index([studentId])
-  @@index([semesterId])
-}
-
-model TimetableSession {
-  id          String        @id @default(cuid())
-  courseId    String
-  lecturerId  String
-  venueId     String
-  semesterId  String
-  dayOfWeek   Int           // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  startTime   String        // HH:mm format
-  endTime     String        // HH:mm format
-  status      SessionStatus @default(DRAFT)
-  notes       String?
-  version     Int           @default(1)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
-  course      Course        @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  lecturer    User          @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
-  venue       Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
-  semester    Semester      @relation(fields: [semesterId], references: [id], onDelete: Cascade)
-
-  @@index([semesterId])
-  @@index([dayOfWeek])
-  @@index([lecturerId])
-  @@index([venueId])
-  @@index([status])
-  @@index([courseId, semesterId, dayOfWeek, startTime])
-}
-
-model ExamSession {
-  id          String   @id @default(cuid())
-  courseId    String
-  venueId     String
-  semesterId  String
-  date        DateTime
-  startTime   String   // HH:mm format
-  endTime     String   // HH:mm format
-  notes       String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  venue       Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
-  semester    Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
-
-  @@index([semesterId])
-  @@index([date])
-  @@index([venueId])
-}
-
-model Notification {
-  id          String           @id @default(cuid())
-  recipientId String
-  title       String
-  message     String
-  type        NotificationType
-  readAt      DateTime?
-  metadata    String?          // JSON string for additional data
-  createdAt   DateTime         @default(now())
-
-  recipient   User             @relation(fields: [recipientId], references: [id], onDelete: Cascade)
-
-  @@index([recipientId])
-  @@index([readAt])
-  @@index([createdAt])
-}
-
-model Announcement {
-  id          String   @id @default(cuid())
-  createdById String
-  scope       String   // "ALL", "DEPARTMENT", "LEVEL"
-  departmentId String?
-  levelId     String?
-  title       String
-  message     String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Cascade)
-  department  Department? @relation(fields: [departmentId], references: [id])
-  level       Level?      @relation(fields: [levelId], references: [id])
-
-  @@index([scope])
-  @@index([createdAt])
-}
-
-model SupportTicket {
-  id          String         @id @default(cuid())
-  userId      String
-  category    TicketCategory
-  subject     String
-  message     String
-  screenshot  String?        // URL to uploaded screenshot
-  status      TicketStatus   @default(OPEN)
-  adminNotes  String?
-  createdAt   DateTime       @default(now())
-  updatedAt   DateTime       @updatedAt
-  resolvedAt  DateTime?
-
-  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-  @@index([status])
-  @@index([category])
-  @@index([createdAt])
-}
-
-model AuditLog {
-  id          String   @id @default(cuid())
-  actorId     String
-  action      String   // e.g., "CREATE_SESSION", "UPDATE_USER", "DELETE_COURSE"
-  entity      String   // e.g., "TimetableSession", "User", "Course"
-  entityId    String?
-  metadata    String?  // JSON string for additional data
-  ipAddress   String?
-  userAgent   String?
-  createdAt   DateTime @default(now())
-
-  actor       User     @relation("ActorUser", fields: [actorId], references: [id])
-
-  @@index([actorId])
-  @@index([entity])
-  @@index([createdAt])
-}
-
-model TimetableVersion {
-  id          String   @id @default(cuid())
-  semesterId  String
-  version     Int
-  publishedAt DateTime?
-  publishedBy String?
-  notes       String?
-  createdAt   DateTime @default(now())
-
-  @@unique([semesterId, version])
-  @@index([semesterId])
-}
-
