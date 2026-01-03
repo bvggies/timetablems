@@ -67,18 +67,18 @@ export const checkConflicts = async (
       ],
     },
     include: {
-      course: true,
-      lecturer: true,
+      Course: true,
+      User: true,
     },
   });
 
   if (venueConflict) {
-    conflicts.push({
-      type: 'VENUE',
-      message: `Venue is already booked by ${venueConflict.course.code} (${venueConflict.lecturer.firstName} ${venueConflict.lecturer.lastName})`,
-      conflictingSessionId: venueConflict.id,
-    });
-  }
+      conflicts.push({
+        type: 'VENUE',
+        message: `Venue is already booked by ${venueConflict.Course.code} (${venueConflict.User.firstName} ${venueConflict.User.lastName})`,
+        conflictingSessionId: venueConflict.id,
+      });
+    }
 
   // Check lecturer conflicts
   const lecturerConflict = await prisma.timetableSession.findFirst({
@@ -110,15 +110,15 @@ export const checkConflicts = async (
       ],
     },
     include: {
-      course: true,
-      venue: true,
+      Course: true,
+      Venue: true,
     },
   });
 
   if (lecturerConflict) {
     conflicts.push({
       type: 'LECTURER',
-      message: `Lecturer is already teaching ${lecturerConflict.course.code} at ${lecturerConflict.venue.name}`,
+      message: `Lecturer is already teaching ${lecturerConflict.Course.code} at ${lecturerConflict.Venue.name}`,
       conflictingSessionId: lecturerConflict.id,
     });
   }

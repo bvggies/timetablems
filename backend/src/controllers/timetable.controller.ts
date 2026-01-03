@@ -50,13 +50,13 @@ export const getTimetable = async (req: Request, res: Response): Promise<void> =
         status: 'PUBLISHED',
       },
       include: {
-        course: {
+        Course: {
           include: {
             department: true,
             level: true,
           },
         },
-        lecturer: {
+        User: {
           select: {
             id: true,
             firstName: true,
@@ -64,8 +64,8 @@ export const getTimetable = async (req: Request, res: Response): Promise<void> =
             email: true,
           },
         },
-        venue: true,
-        semester: true,
+        Venue: true,
+        Semester: true,
       },
       orderBy: [
         { dayOfWeek: 'asc' },

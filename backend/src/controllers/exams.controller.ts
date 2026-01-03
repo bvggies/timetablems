@@ -113,7 +113,7 @@ export const checkExamConflicts = async (req: Request, res: Response): Promise<v
         ],
       },
       include: {
-        course: true,
+        Course: true,
       },
     });
 
@@ -121,7 +121,7 @@ export const checkExamConflicts = async (req: Request, res: Response): Promise<v
     if (venueConflict) {
       conflicts.push({
         type: 'VENUE',
-        message: `Venue is already booked for ${venueConflict.course.code} exam`,
+        message: `Venue is already booked for ${venueConflict.Course.code} exam`,
         conflictingExamId: venueConflict.id,
       });
     }
