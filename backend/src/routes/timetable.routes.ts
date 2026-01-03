@@ -7,6 +7,7 @@ import {
   generateTimetableHandler,
   publishTimetable,
   checkSessionConflicts,
+  getNextClass,
 } from '../controllers/timetable.controller';
 import { authenticate } from '../middleware/auth';
 import { requireAdmin } from '../middleware/rbac';
@@ -14,6 +15,7 @@ import { requireAdmin } from '../middleware/rbac';
 const router = Router();
 
 router.get('/', authenticate, getTimetable);
+router.get('/next-class', authenticate, getNextClass);
 router.post('/sessions', authenticate, requireAdmin, createSession);
 router.put('/sessions/:id', authenticate, requireAdmin, updateSession);
 router.delete('/sessions/:id', authenticate, requireAdmin, deleteSession);

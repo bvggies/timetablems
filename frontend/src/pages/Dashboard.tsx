@@ -41,6 +41,7 @@ import {
 } from 'recharts';
 import api from '../services/api';
 import { authService } from '../services/auth';
+import NextClassWidget from '../components/NextClassWidget';
 
 const Dashboard: React.FC = () => {
   const theme = useTheme();

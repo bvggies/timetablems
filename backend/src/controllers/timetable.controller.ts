@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import prisma from '../config/database';
 import { logger } from '../utils/logger';
 import { checkConflicts, generateTimetable, GenerationOptions } from '../services/timetable.service';
+import { addDays } from 'date-fns';
 
 export const getTimetable = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -281,5 +282,144 @@ export const checkSessionConflicts = async (req: Request, res: Response): Promis
   } catch (error: any) {
     logger.error('Check conflicts error', error);
     res.status(500).json({ error: error.message || 'Failed to check conflicts' });
+  }
+};
+
+export const getNextClass = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const userId = req.user.userId;
+    const userRole = req.user.role;
+
+    // Get current active semester
+    const currentSemester = await prisma.semester.findFirst({
+      where: { status: 'ACTIVE' },
+      orderBy: { startDate: 'desc' },
+    });
+
+    if (!currentSemester) {
+      res.json(null);
+      return;
+    }
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+    let nextSession: any = null;
+
+    if (userRole === 'STUDENT') {
+      // Get student's registered courses
+      const registrations = await prisma.studentCourseRegistration.findMany({
+        where: {
+          studentId: userId,
+          droppedAt: null,
+          semesterId: currentSemester.id,
+        },
+        include: {
+          Course: {
+            include: {
+              TimetableSession: {
+                where: {
+                  status: 'PUBLISHED',
+                  semesterId: currentSemester.id,
+                },
+                include: {
+                  Venue: true,
+                  User: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Flatten all sessions from registered courses
+      const allSessions = registrations.flatMap((reg) => reg.Course.TimetableSession);
+
+      // Find next session
+      for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
+        const checkDate = addDays(today, dayOffset);
+        const checkDayOfWeek = checkDate.getDay();
+
+        const sessionsOnDay = allSessions.filter((s) => s.dayOfWeek === checkDayOfWeek);
+
+        if (sessionsOnDay.length > 0) {
+          // Sort by start time
+          sessionsOnDay.sort((a, b) => {
+            const [aHours, aMins] = a.startTime.split(':').map(Number);
+            const [bHours, bMins] = b.startTime.split(':').map(Number);
+            return aHours * 60 + aMins - (bHours * 60 + bMins);
+          });
+
+          // If checking today, only include future sessions
+          if (dayOffset === 0) {
+            const [nowHours, nowMins] = [now.getHours(), now.getMinutes()];
+            const futureSessions = sessionsOnDay.filter((s) => {
+              const [sHours, sMins] = s.startTime.split(':').map(Number);
+              return sHours * 60 + sMins > nowHours * 60 + nowMins;
+            });
+            if (futureSessions.length > 0) {
+              nextSession = futureSessions[0];
+              break;
+            }
+          } else {
+            nextSession = sessionsOnDay[0];
+            break;
+          }
+        }
+      }
+    } else if (userRole === 'LECTURER') {
+      // Get lecturer's assigned sessions
+      const sessions = await prisma.timetableSession.findMany({
+        where: {
+          lecturerId: userId,
+          status: 'PUBLISHED',
+          semesterId: currentSemester.id,
+        },
+        include: {
+          Course: true,
+          Venue: true,
+          User: true,
+        },
+        orderBy: [
+          { dayOfWeek: 'asc' },
+          { startTime: 'asc' },
+        ],
+      });
+
+      // Find next session
+      for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
+        const checkDate = addDays(today, dayOffset);
+        const checkDayOfWeek = checkDate.getDay();
+
+        const sessionsOnDay = sessions.filter((s) => s.dayOfWeek === checkDayOfWeek);
+
+        if (sessionsOnDay.length > 0) {
+          if (dayOffset === 0) {
+            const [nowHours, nowMins] = [now.getHours(), now.getMinutes()];
+            const futureSessions = sessionsOnDay.filter((s) => {
+              const [sHours, sMins] = s.startTime.split(':').map(Number);
+              return sHours * 60 + sMins > nowHours * 60 + nowMins;
+            });
+            if (futureSessions.length > 0) {
+              nextSession = futureSessions[0];
+              break;
+            }
+          } else {
+            nextSession = sessionsOnDay[0];
+            break;
+          }
+        }
+      }
+    }
+
+    res.json(nextSession);
+  } catch (error: any) {
+    logger.error('Get next class error', error);
+    res.status(500).json({ error: 'Failed to get next class' });
   }
 };
