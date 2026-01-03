@@ -22,6 +22,11 @@ import {
   PersonAdd,
   Folder,
   Refresh,
+  AdminPanelSettings,
+  Person,
+  Book,
+  Assessment,
+  Dashboard as DashboardIcon,
 } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -219,24 +224,113 @@ const Dashboard: React.FC = () => {
 
   const COLORS = ['#10b981', '#ef4444', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899'];
 
+  // Role-specific theme configurations
+  const getRoleTheme = () => {
+    if (userRole === 'ADMIN') {
+      return {
+        headerGradient: 'linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%)',
+        primaryColor: '#1e293b',
+        accentColor: '#475569',
+        iconBg: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+        cardBorder: alpha('#1e293b', 0.2),
+        headerIcon: <AdminPanelSettings />,
+        welcomeText: 'System Administration Dashboard',
+        subtitle: 'Monitor and manage the entire timetable system',
+      };
+    } else if (userRole === 'LECTURER') {
+      return {
+        headerGradient: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 50%, #a78bfa 100%)',
+        primaryColor: '#7c3aed',
+        accentColor: '#a78bfa',
+        iconBg: 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)',
+        cardBorder: alpha('#7c3aed', 0.2),
+        headerIcon: <Book />,
+        welcomeText: 'Lecturer Dashboard',
+        subtitle: 'Manage your courses, sessions, and student attendance',
+      };
+    } else {
+      return {
+        headerGradient: 'linear-gradient(135deg, #6366f1 0%, #818cf8 50%, #a5b4fc 100%)',
+        primaryColor: '#6366f1',
+        accentColor: '#a5b4fc',
+        iconBg: 'linear-gradient(135deg, #6366f1 0%, #818cf8 100%)',
+        cardBorder: alpha('#6366f1', 0.2),
+        headerIcon: <Person />,
+        welcomeText: 'Student Dashboard',
+        subtitle: 'View your classes, courses, and academic schedule',
+      };
+    }
+  };
+
+  const roleTheme = getRoleTheme();
+
   return (
     <Box>
-      <Box sx={{ mb: 4 }}>
-        <Typography 
-          variant="h4" 
-          gutterBottom
-          sx={{ 
-            fontWeight: 700,
-            color: 'text.primary',
-            mb: 1,
-          }}
-        >
-          Dashboard Overview
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ fontWeight: 400 }}>
-          Welcome back, {user?.firstName}! Here's what's happening with your timetable system.
-        </Typography>
-      </Box>
+      {/* Role-specific Header */}
+      <Paper
+        elevation={0}
+        sx={{
+          background: roleTheme.headerGradient,
+          color: 'white',
+          p: 4,
+          mb: 4,
+          borderRadius: 3,
+          position: 'relative',
+          overflow: 'hidden',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: -50,
+            right: -50,
+            width: 200,
+            height: 200,
+            background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)',
+            borderRadius: '50%',
+          },
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            bottom: -30,
+            left: -30,
+            width: 150,
+            height: 150,
+            background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
+            borderRadius: '50%',
+          },
+        }}
+      >
+        <Box sx={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 3 }}>
+          <Box
+            sx={{
+              width: 64,
+              height: 64,
+              borderRadius: 2,
+              background: 'rgba(255, 255, 255, 0.2)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backdropFilter: 'blur(10px)',
+            }}
+          >
+            {React.cloneElement(roleTheme.headerIcon, { sx: { fontSize: 32, color: 'white' } })}
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <Typography 
+              variant="h4" 
+              sx={{ 
+                fontWeight: 700,
+                mb: 0.5,
+                color: 'white',
+              }}
+            >
+              {roleTheme.welcomeText}
+            </Typography>
+            <Typography variant="body1" sx={{ color: 'rgba(255, 255, 255, 0.9)', fontWeight: 400 }}>
+              Welcome back, {user?.firstName}! {roleTheme.subtitle}
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
 
       {/* Next Class Widget - For Students and Lecturers - Prominent position at top */}
       {(userRole === 'STUDENT' || userRole === 'LECTURER') && (
@@ -261,31 +355,77 @@ const Dashboard: React.FC = () => {
                 background: isDark 
                   ? alpha(theme.palette.background.paper, 0.8)
                   : 'white',
-                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                borderRadius: 2,
+                border: `2px solid ${userRole === 'ADMIN' 
+                  ? alpha('#1e293b', 0.1)
+                  : userRole === 'LECTURER'
+                  ? alpha('#7c3aed', 0.1)
+                  : alpha('#6366f1', 0.1)}`,
+                borderRadius: 3,
                 height: '100%',
-                transition: 'all 0.2s ease-in-out',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                position: 'relative',
+                overflow: 'hidden',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: 4,
+                  background: userRole === 'ADMIN'
+                    ? 'linear-gradient(90deg, #1e293b 0%, #334155 100%)'
+                    : userRole === 'LECTURER'
+                    ? 'linear-gradient(90deg, #7c3aed 0%, #8b5cf6 100%)'
+                    : 'linear-gradient(90deg, #6366f1 0%, #818cf8 100%)',
+                  opacity: 0,
+                  transition: 'opacity 0.3s ease',
+                },
                 '&:hover': {
-                  transform: 'translateY(-2px)',
-                  boxShadow: `0 8px 16px ${alpha(card.color, 0.2)}`,
+                  transform: 'translateY(-4px) scale(1.02)',
+                  boxShadow: userRole === 'ADMIN'
+                    ? `0 12px 24px ${alpha('#1e293b', 0.25)}`
+                    : userRole === 'LECTURER'
+                    ? `0 12px 24px ${alpha('#7c3aed', 0.25)}`
+                    : `0 12px 24px ${alpha('#6366f1', 0.25)}`,
+                  borderColor: userRole === 'ADMIN'
+                    ? alpha('#1e293b', 0.3)
+                    : userRole === 'LECTURER'
+                    ? alpha('#7c3aed', 0.3)
+                    : alpha('#6366f1', 0.3),
+                  '&::before': {
+                    opacity: 1,
+                  },
                 },
               }}
             >
-              <CardContent sx={{ p: 2.5 }}>
+              <CardContent sx={{ p: 3 }}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                   <Box
                     sx={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 1.5,
-                      background: `linear-gradient(135deg, ${card.color} 0%, ${alpha(card.color, 0.7)} 100%)`,
+                      width: 56,
+                      height: 56,
+                      borderRadius: 2,
+                      background: userRole === 'ADMIN'
+                        ? 'linear-gradient(135deg, #1e293b 0%, #334155 100%)'
+                        : userRole === 'LECTURER'
+                        ? 'linear-gradient(135deg, #7c3aed 0%, #8b5cf6 100%)'
+                        : `linear-gradient(135deg, ${card.color} 0%, ${alpha(card.color, 0.7)} 100%)`,
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       color: 'white',
+                      boxShadow: userRole === 'ADMIN'
+                        ? `0 4px 12px ${alpha('#1e293b', 0.3)}`
+                        : userRole === 'LECTURER'
+                        ? `0 4px 12px ${alpha('#7c3aed', 0.3)}`
+                        : `0 4px 12px ${alpha(card.color, 0.3)}`,
+                      transition: 'all 0.3s ease',
+                      '&:hover': {
+                        transform: 'scale(1.1) rotate(5deg)',
+                      },
                     }}
                   >
-                    {React.cloneElement(card.icon, { sx: { fontSize: 24 } })}
+                    {React.cloneElement(card.icon, { sx: { fontSize: 28 } })}
                   </Box>
                   {card.change && (
                     <Chip
@@ -409,16 +549,34 @@ const Dashboard: React.FC = () => {
         {(courseDistribution.length > 0 || workloadData.length > 0) && (
           <Grid item xs={12} lg={userRole === 'ADMIN' ? 4 : 12}>
             <Paper
+              elevation={0}
               sx={{
                 p: 3,
                 background: isDark 
                   ? alpha(theme.palette.background.paper, 0.8)
                   : 'white',
-                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                borderRadius: 2,
+                border: `2px solid ${userRole === 'ADMIN' 
+                  ? alpha('#1e293b', 0.1)
+                  : userRole === 'LECTURER'
+                  ? alpha('#7c3aed', 0.1)
+                  : alpha('#6366f1', 0.1)}`,
+                borderRadius: 3,
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: userRole === 'ADMIN'
+                    ? alpha('#1e293b', 0.3)
+                    : userRole === 'LECTURER'
+                    ? alpha('#7c3aed', 0.3)
+                    : alpha('#6366f1', 0.3),
+                  boxShadow: userRole === 'ADMIN'
+                    ? `0 8px 16px ${alpha('#1e293b', 0.1)}`
+                    : userRole === 'LECTURER'
+                    ? `0 8px 16px ${alpha('#7c3aed', 0.1)}`
+                    : `0 8px 16px ${alpha('#6366f1', 0.1)}`,
+                },
               }}
             >
               <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
@@ -480,18 +638,40 @@ const Dashboard: React.FC = () => {
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <Paper
+              elevation={0}
               sx={{
                 p: 3,
                 background: isDark 
                   ? alpha(theme.palette.background.paper, 0.8)
                   : 'white',
-                border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
-                borderRadius: 2,
+                border: `2px solid ${alpha('#1e293b', 0.1)}`,
+                borderRadius: 3,
+                transition: 'all 0.3s ease',
+                '&:hover': {
+                  borderColor: alpha('#1e293b', 0.3),
+                  boxShadow: `0 8px 16px ${alpha('#1e293b', 0.1)}`,
+                },
               }}
             >
-              <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>
-                Monthly Activity
-              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
+                <Box
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 1.5,
+                    background: 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'white',
+                  }}
+                >
+                  <Assessment sx={{ fontSize: 20 }} />
+                </Box>
+                <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                  Monthly Activity
+                </Typography>
+              </Box>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={monthlyActivity}>
                   <CartesianGrid strokeDasharray="3 3" stroke={alpha(theme.palette.divider, 0.5)} />
