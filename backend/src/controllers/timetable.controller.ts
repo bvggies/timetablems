@@ -4,23 +4,6 @@ import { logger } from '../utils/logger';
 import { checkConflicts, generateTimetable, GenerationOptions } from '../services/timetable.service';
 import { addDays } from 'date-fns';
 
-// Feature #13: Multi-Semester Support - Get all semesters
-export const getSemesters = async (req: Request, res: Response): Promise<void> => {
-  try {
-    const semesters = await prisma.semester.findMany({
-      orderBy: [
-        { year: 'desc' },
-        { term: 'desc' },
-      ],
-    });
-
-    res.json(semesters);
-  } catch (error: any) {
-    logger.error('Get semesters error', error);
-    res.status(500).json({ error: 'Failed to fetch semesters' });
-  }
-};
-
 export const getTimetable = async (req: Request, res: Response): Promise<void> => {
   try {
     if (!req.user) {
