@@ -220,13 +220,23 @@ export const generateTimetableHandler = async (req: Request, res: Response): Pro
 
 export const publishTimetable = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { semesterId } = req.body;
+    const { semesterId, notes } = req.body;
+    const userId = (req as any).user.id;
 
     if (!semesterId) {
       res.status(400).json({ error: 'Semester ID is required' });
       return;
     }
 
+    // Get current max version for this semester
+    const maxVersion = await prisma.timetableVersion.findFirst({
+      where: { semesterId },
+      orderBy: { version: 'desc' },
+    });
+
+    const newVersion = (maxVersion?.version || 0) + 1;
+
+    // Update all DRAFT sessions to PUBLISHED with new version
     const result = await prisma.timetableSession.updateMany({
       where: {
         semesterId,
@@ -234,16 +244,117 @@ export const publishTimetable = async (req: Request, res: Response): Promise<voi
       },
       data: {
         status: 'PUBLISHED',
+        version: newVersion,
+      },
+    });
+
+    // Create version record
+    await prisma.timetableVersion.create({
+      data: {
+        semesterId,
+        version: newVersion,
+        publishedAt: new Date(),
+        publishedBy: userId,
+        notes: notes || null,
       },
     });
 
     res.json({
       message: 'Timetable published successfully',
       sessionsPublished: result.count,
+      version: newVersion,
     });
   } catch (error: any) {
     logger.error('Publish timetable error', error);
     res.status(500).json({ error: error.message || 'Failed to publish timetable' });
+  }
+};
+
+// Get timetable versions
+export const getTimetableVersions = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { semesterId } = req.query;
+
+    if (!semesterId) {
+      res.status(400).json({ error: 'Semester ID is required' });
+      return;
+    }
+
+    const versions = await prisma.timetableVersion.findMany({
+      where: { semesterId: semesterId as string },
+      orderBy: { version: 'desc' },
+    });
+
+    res.json(versions);
+  } catch (error: any) {
+    logger.error('Get versions error', error);
+    res.status(500).json({ error: error.message || 'Failed to get versions' });
+  }
+};
+
+// Rollback to a version
+export const rollbackTimetable = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { semesterId, version } = req.body;
+
+    if (!semesterId || !version) {
+      res.status(400).json({ error: 'Semester ID and version are required' });
+      return;
+    }
+
+    // Get the version to rollback to
+    const targetVersion = await prisma.timetableVersion.findUnique({
+      where: {
+        semesterId_version: {
+          semesterId,
+          version: parseInt(version),
+        },
+      },
+    });
+
+    if (!targetVersion) {
+      res.status(404).json({ error: 'Version not found' });
+      return;
+    }
+
+    // Archive current sessions and restore from version
+    // This is a simplified implementation - in production, you'd want to store session snapshots
+    const sessions = await prisma.timetableSession.findMany({
+      where: {
+        semesterId,
+        version: parseInt(version),
+      },
+    });
+
+    // Update all current sessions to DRAFT
+    await prisma.timetableSession.updateMany({
+      where: {
+        semesterId,
+        status: 'PUBLISHED',
+      },
+      data: {
+        status: 'DRAFT',
+      },
+    });
+
+    // Restore sessions from the version
+    await prisma.timetableSession.updateMany({
+      where: {
+        semesterId,
+        version: parseInt(version),
+      },
+      data: {
+        status: 'PUBLISHED',
+      },
+    });
+
+    res.json({
+      message: `Timetable rolled back to version ${version}`,
+      sessionsRestored: sessions.length,
+    });
+  } catch (error: any) {
+    logger.error('Rollback timetable error', error);
+    res.status(500).json({ error: error.message || 'Failed to rollback timetable' });
   }
 };
 

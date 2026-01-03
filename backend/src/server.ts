@@ -27,6 +27,8 @@ import resourceBookingRoutes from './routes/resource-booking.routes';
 import studentGroupsRoutes from './routes/student-groups.routes';
 import notificationPreferencesRoutes from './routes/notification-preferences.routes';
 import searchRoutes from './routes/search.routes';
+import announcementsRoutes from './routes/announcements.routes';
+import adminToolsRoutes from './routes/admin-tools.routes';
 
 const app = express();
 
@@ -244,6 +246,8 @@ app.use('/api/calendar', calendarRoutes);
 app.use('/api/resources', resourceBookingRoutes);
 app.use('/api/student-groups', studentGroupsRoutes);
 app.use('/api/notification-preferences', notificationPreferencesRoutes);
+app.use('/api/announcements', announcementsRoutes);
+app.use('/api/admin', adminToolsRoutes);
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {

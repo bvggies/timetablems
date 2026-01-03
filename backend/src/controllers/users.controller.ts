@@ -167,3 +167,61 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
   }
 };
 
+// Get current user profile
+export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user.id;
+
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        Department: true,
+        Level: true,
+        NotificationPreference: true,
+      },
+    });
+
+    if (!user) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    const { passwordHash, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  } catch (error: any) {
+    logger.error('Get current user error', error);
+    res.status(500).json({ error: 'Failed to fetch user profile' });
+  }
+};
+
+// Update current user profile
+export const updateCurrentUser = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const userId = (req as any).user.id;
+    const { firstName, lastName, phone, profilePhoto, departmentId, levelId } = req.body;
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(firstName && { firstName }),
+        ...(lastName && { lastName }),
+        ...(phone !== undefined && { phone }),
+        ...(profilePhoto !== undefined && { profilePhoto }),
+        ...(departmentId !== undefined && { departmentId }),
+        ...(levelId !== undefined && { levelId }),
+      },
+      include: {
+        Department: true,
+        Level: true,
+        NotificationPreference: true,
+      },
+    });
+
+    const { passwordHash, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
+  } catch (error: any) {
+    logger.error('Update current user error', error);
+    res.status(400).json({ error: error.message || 'Failed to update profile' });
+  }
+};
+
