@@ -45,7 +45,7 @@ const CalendarPage: React.FC = () => {
   const { data: events } = useQuery({
     queryKey: ['calendar-events'],
     queryFn: async () => {
-      const res = await api.get('/api/calendar/events');
+      const res = await api.get('/calendar/events');
       return res.data;
     },
   });
@@ -53,14 +53,14 @@ const CalendarPage: React.FC = () => {
   const { data: semesters } = useQuery({
     queryKey: ['semesters'],
     queryFn: async () => {
-      const res = await api.get('/api/semesters');
+      const res = await api.get('/semesters');
       return res.data;
     },
   });
 
   const createEventMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.post('/api/calendar/events', data);
+      await api.post('/calendar/events', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['calendar-events'] });

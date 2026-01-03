@@ -29,14 +29,14 @@ const Profile: React.FC = () => {
   const { data: profile } = useQuery({
     queryKey: ['profile', user?.id],
     queryFn: async () => {
-      const res = await api.get('/api/users/me');
+      const res = await api.get('/users/me');
       return res.data;
     },
   });
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await api.put('/api/users/me', data);
+      const res = await api.put('/users/me', data);
       return res.data;
     },
     onSuccess: (data) => {

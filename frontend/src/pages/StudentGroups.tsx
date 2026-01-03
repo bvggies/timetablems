@@ -40,7 +40,7 @@ const StudentGroups: React.FC = () => {
   const { data: groups } = useQuery({
     queryKey: ['student-groups'],
     queryFn: async () => {
-      const res = await api.get('/api/student-groups/groups');
+      const res = await api.get('/student-groups/groups');
       return res.data;
     },
   });
@@ -48,7 +48,7 @@ const StudentGroups: React.FC = () => {
   const { data: students } = useQuery({
     queryKey: ['students'],
     queryFn: async () => {
-      const res = await api.get('/api/users', { params: { role: 'STUDENT' } });
+      const res = await api.get('/users', { params: { role: 'STUDENT' } });
       return res.data;
     },
   });
@@ -56,14 +56,14 @@ const StudentGroups: React.FC = () => {
   const { data: semesters } = useQuery({
     queryKey: ['semesters'],
     queryFn: async () => {
-      const res = await api.get('/api/semesters');
+      const res = await api.get('/semesters');
       return res.data;
     },
   });
 
   const createGroupMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.post('/api/student-groups/groups', data);
+      await api.post('/student-groups/groups', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['student-groups'] });

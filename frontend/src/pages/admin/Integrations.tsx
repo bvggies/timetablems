@@ -26,14 +26,14 @@ const Integrations: React.FC = () => {
   const { data: status } = useQuery({
     queryKey: ['integration-status'],
     queryFn: async () => {
-      const res = await api.get('/api/integrations/status');
+      const res = await api.get('/integrations/status');
       return res.data;
     },
   });
 
   const syncLMSMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await api.post('/api/integrations/lms/sync', data);
+      const res = await api.post('/integrations/lms/sync', data);
       return res.data;
     },
     onSuccess: () => {
@@ -43,7 +43,7 @@ const Integrations: React.FC = () => {
 
   const syncSISMutation = useMutation({
     mutationFn: async (data: any) => {
-      const res = await api.post('/api/integrations/sis/sync', data);
+      const res = await api.post('/integrations/sis/sync', data);
       return res.data;
     },
     onSuccess: () => {
@@ -53,7 +53,7 @@ const Integrations: React.FC = () => {
 
   const configureMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.post('/api/integrations/configure', data);
+      await api.post('/integrations/configure', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['integration-status'] });

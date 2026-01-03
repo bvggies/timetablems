@@ -38,7 +38,7 @@ const Announcements: React.FC = () => {
   const { data: announcements } = useQuery({
     queryKey: ['announcements'],
     queryFn: async () => {
-      const res = await api.get('/api/announcements');
+      const res = await api.get('/announcements');
       return res.data;
     },
   });
@@ -46,7 +46,7 @@ const Announcements: React.FC = () => {
   const { data: departments } = useQuery({
     queryKey: ['departments'],
     queryFn: async () => {
-      const res = await api.get('/api/departments');
+      const res = await api.get('/departments');
       return res.data;
     },
   });
@@ -54,14 +54,14 @@ const Announcements: React.FC = () => {
   const { data: levels } = useQuery({
     queryKey: ['levels'],
     queryFn: async () => {
-      const res = await api.get('/api/levels');
+      const res = await api.get('/levels');
       return res.data;
     },
   });
 
   const createAnnouncementMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.post('/api/announcements', data);
+      await api.post('/announcements', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['announcements'] });

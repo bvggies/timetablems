@@ -38,7 +38,7 @@ const ResourceBooking: React.FC = () => {
   const { data: venues } = useQuery({
     queryKey: ['venues'],
     queryFn: async () => {
-      const res = await api.get('/api/venues');
+      const res = await api.get('/venues');
       return res.data;
     },
   });
@@ -46,14 +46,14 @@ const ResourceBooking: React.FC = () => {
   const { data: bookings } = useQuery({
     queryKey: ['resource-bookings'],
     queryFn: async () => {
-      const res = await api.get('/api/resources/bookings');
+      const res = await api.get('/resources/bookings');
       return res.data;
     },
   });
 
   const createBookingMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.post('/api/resources/bookings', data);
+      await api.post('/resources/bookings', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['resource-bookings'] });

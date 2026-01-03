@@ -33,7 +33,7 @@ const Settings: React.FC = () => {
   const { data: currentPreferences } = useQuery({
     queryKey: ['notification-preferences'],
     queryFn: async () => {
-      const res = await api.get('/api/notification-preferences/preferences');
+      const res = await api.get('/notification-preferences/preferences');
       return res.data;
     },
   });
@@ -54,7 +54,7 @@ const Settings: React.FC = () => {
 
   const updatePreferencesMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.put('/api/notification-preferences/preferences', data);
+      await api.put('/notification-preferences/preferences', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['notification-preferences'] });

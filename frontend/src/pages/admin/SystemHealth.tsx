@@ -17,7 +17,7 @@ const SystemHealth: React.FC = () => {
   const { data: health } = useQuery({
     queryKey: ['system-health'],
     queryFn: async () => {
-      const res = await api.get('/api/admin/health');
+      const res = await api.get('/admin/health');
       return res.data;
     },
     refetchInterval: 30000, // Refresh every 30 seconds
@@ -26,7 +26,7 @@ const SystemHealth: React.FC = () => {
   const { data: stats } = useQuery({
     queryKey: ['system-stats'],
     queryFn: async () => {
-      const res = await api.get('/api/admin/stats');
+      const res = await api.get('/admin/stats');
       return res.data;
     },
   });
@@ -34,7 +34,7 @@ const SystemHealth: React.FC = () => {
   const { data: activity } = useQuery({
     queryKey: ['system-activity'],
     queryFn: async () => {
-      const res = await api.get('/api/admin/activity', { params: { limit: 50 } });
+      const res = await api.get('/admin/activity', { params: { limit: 50 } });
       return res.data;
     },
   });

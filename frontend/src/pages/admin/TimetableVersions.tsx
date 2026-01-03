@@ -27,7 +27,7 @@ const TimetableVersions: React.FC = () => {
   const { data: semesters } = useQuery({
     queryKey: ['semesters'],
     queryFn: async () => {
-      const res = await api.get('/api/semesters');
+      const res = await api.get('/semesters');
       return res.data;
     },
   });
@@ -35,7 +35,7 @@ const TimetableVersions: React.FC = () => {
   const { data: versions } = useQuery({
     queryKey: ['timetable-versions', semesterId],
     queryFn: async () => {
-      const res = await api.get('/api/timetable/versions', {
+      const res = await api.get('/timetable/versions', {
         params: { semesterId },
       });
       return res.data;
@@ -45,7 +45,7 @@ const TimetableVersions: React.FC = () => {
 
   const rollbackMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.post('/api/timetable/rollback', data);
+      await api.post('/timetable/rollback', data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['timetable-versions'] });

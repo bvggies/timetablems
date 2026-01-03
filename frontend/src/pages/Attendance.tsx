@@ -48,7 +48,7 @@ const Attendance: React.FC = () => {
   const { data: sessions, isLoading } = useQuery({
     queryKey: ['lecturer-sessions'],
     queryFn: async () => {
-      const res = await api.get('/api/timetable', {
+      const res = await api.get('/timetable', {
         params: { lecturerId: user?.id },
       });
       return res.data;
@@ -60,7 +60,7 @@ const Attendance: React.FC = () => {
   const { data: attendance } = useQuery({
     queryKey: ['attendance', selectedSession?.id],
     queryFn: async () => {
-      const res = await api.get(`/api/attendance/sessions/${selectedSession?.id}/attendance`);
+      const res = await api.get(`/attendance/sessions/${selectedSession?.id}/attendance`);
       return res.data;
     },
     enabled: !!selectedSession,
@@ -70,7 +70,7 @@ const Attendance: React.FC = () => {
   const { data: studentAttendance } = useQuery({
     queryKey: ['student-attendance', user?.id],
     queryFn: async () => {
-      const res = await api.get(`/api/attendance/students/${user?.id}/attendance`);
+      const res = await api.get(`/attendance/students/${user?.id}/attendance`);
       return res.data;
     },
     enabled: user?.role === 'STUDENT',
@@ -78,7 +78,7 @@ const Attendance: React.FC = () => {
 
   const markAttendanceMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.post(`/api/attendance/sessions/${selectedSession.id}/attendance`, data);
+      await api.post(`/attendance/sessions/${selectedSession.id}/attendance`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['attendance'] });
@@ -88,7 +88,7 @@ const Attendance: React.FC = () => {
 
   const bulkMarkMutation = useMutation({
     mutationFn: async (data: any) => {
-      await api.post(`/api/attendance/sessions/${selectedSession.id}/attendance/bulk`, {
+      await api.post(`/attendance/sessions/${selectedSession.id}/attendance/bulk`, {
         attendanceList: data,
       });
     },
