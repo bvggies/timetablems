@@ -182,9 +182,23 @@ export const exportToICS = async (
       semesterStartDate = new Date();
     }
 
-    // Calculate the date for this session
+    // Calculate the date for this session (find next occurrence of this day)
     const sessionDate = new Date(semesterStartDate);
-    const daysToAdd = session.dayOfWeek - sessionDate.getDay();
+    const currentDay = sessionDate.getDay();
+    let daysToAdd = session.dayOfWeek - currentDay;
+    if (daysToAdd < 0) {
+      daysToAdd += 7; // Next week
+    }
+    if (daysToAdd === 0 && session.startTime) {
+      // If same day, check if time has passed
+      const [startHour, startMinute] = session.startTime.split(':').map(Number);
+      const now = new Date();
+      const sessionTime = new Date(sessionDate);
+      sessionTime.setHours(startHour, startMinute, 0, 0);
+      if (sessionTime < now) {
+        daysToAdd = 7; // Next week
+      }
+    }
     sessionDate.setDate(sessionDate.getDate() + daysToAdd);
 
     // Parse time

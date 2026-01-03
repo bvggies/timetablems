@@ -28,6 +28,7 @@ import api from '../services/api';
 import { format } from 'date-fns';
 import { exportToPDF, exportToExcel, exportToCSV, exportToICS } from '../utils/export';
 import { authService } from '../services/auth';
+import CalendarSync from '../components/CalendarSync';
 
 const Timetable: React.FC = () => {
   const theme = useTheme();
@@ -50,20 +51,43 @@ const Timetable: React.FC = () => {
       return;
     }
 
-    const title = `${user?.firstName || 'My'}_Timetable`;
+    const mappedSessions = sessions.map((session: any) => ({
+      id: session.id,
+      course: {
+        code: session.Course?.code || 'N/A',
+        title: session.Course?.title || 'N/A',
+      },
+      lecturer: {
+        firstName: session.User?.firstName || 'N/A',
+        lastName: session.User?.lastName || 'N/A',
+      },
+      venue: {
+        name: session.Venue?.name || 'N/A',
+        location: session.Venue?.location || undefined,
+      },
+      dayOfWeek: session.dayOfWeek,
+      startTime: session.startTime,
+      endTime: session.endTime,
+      status: session.status,
+    }));
+
+    const title = `PUG_Timetable_${new Date().toISOString().split('T')[0]}`;
 
     switch (format) {
       case 'pdf':
-        exportToPDF(sessions, title);
+        exportToPDF(mappedSessions, title);
         break;
       case 'excel':
-        exportToExcel(sessions, title);
+        exportToExcel(mappedSessions, title);
         break;
       case 'csv':
-        exportToCSV(sessions, title);
+        exportToCSV(mappedSessions, title);
         break;
       case 'ics':
-        exportToICS(sessions, title, new Date());
+        const semesterStartDate = sessions[0]?.Semester?.startDate 
+          ? new Date(sessions[0].Semester.startDate)
+          : new Date();
+        exportToICS(mappedSessions, title, semesterStartDate);
         break;
     }
     setExportMenuAnchor(null);
@@ -118,18 +142,24 @@ const Timetable: React.FC = () => {
             Your class schedule for this semester
           </Typography>
         </Box>
-        <Button
-          variant="contained"
-          startIcon={<DownloadIcon />}
-          onClick={(e) => setExportMenuAnchor(e.currentTarget)}
-          sx={{
-            borderRadius: 2,
-            px: 3,
-            py: 1.25,
-          }}
-        >
-          Export
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <CalendarSync 
+            sessions={sessions || []} 
+            semesterStartDate={undefined}
+          />
+          <Button
+            variant="contained"
+            startIcon={<DownloadIcon />}
+            onClick={(e) => setExportMenuAnchor(e.currentTarget)}
+            sx={{
+              borderRadius: 2,
+              px: 3,
+              py: 1.25,
+            }}
+          >
+            Export
+          </Button>
+        </Box>
       </Box>
 
       <Menu
