@@ -13,6 +13,7 @@ import {
 import { Search, People } from '@mui/icons-material';
 import { useQuery } from '@tanstack/react-query';
 import api from '../services/api';
+import { authService } from '../services/auth';
 import ModernTable from '../components/ModernTable';
 
 const Students: React.FC = () => {
