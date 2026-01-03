@@ -21,6 +21,11 @@ import examsRoutes from './routes/exams.routes';
 import supportRoutes from './routes/support.routes';
 import dashboardRoutes from './routes/dashboard.routes';
 import importRoutes from './routes/import.routes';
+import attendanceRoutes from './routes/attendance.routes';
+import calendarRoutes from './routes/calendar.routes';
+import resourceBookingRoutes from './routes/resource-booking.routes';
+import studentGroupsRoutes from './routes/student-groups.routes';
+import notificationPreferencesRoutes from './routes/notification-preferences.routes';
 
 const app = express();
 

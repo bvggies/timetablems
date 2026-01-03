@@ -8,15 +8,15 @@ datasource db {
 }
 
 model Announcement {
-   id           String      @id @default(cuid())
-   createdById  String
-   scope        String
-   departmentId String?
-   levelId      String?
-   title        String
-   message      String
-   createdAt    DateTime    @default(now())
-   updatedAt    DateTime    @updatedAt
+  id           String      @id @default(cuid())
+  createdById  String
+  scope        String
+  departmentId String?
+  levelId      String?
+  title        String
+  message      String
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
   User         User        @relation(fields: [createdById], references: [id], onDelete: Cascade)
   Department   Department? @relation(fields: [departmentId], references: [id])
   Level        Level?      @relation(fields: [levelId], references: [id])
@@ -26,15 +26,15 @@ model Announcement {
 }
 
 model AuditLog {
-   id        String   @id @default(cuid())
-   actorId   String
-   action    String
-   entity    String
-   entityId  String?
-   metadata  String?
-   ipAddress String?
-   userAgent String?
-   createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  actorId   String
+  action    String
+  entity    String
+  entityId  String?
+  metadata  String?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
   User      User     @relation(fields: [actorId], references: [id])
 
   @@index([actorId])
@@ -43,7 +43,7 @@ model AuditLog {
 }
 
 model Course {
-   id                        String                      @id @default(cuid())
+  id                        String                      @id @default(cuid())
   code                      String                      @unique
   title                     String
   credits                   Int
@@ -51,8 +51,8 @@ model Course {
   departmentId              String
   levelId                   String
   expectedSize              Int                         @default(50)
-   createdAt                 DateTime                    @default(now())
-   updatedAt                 DateTime                    @updatedAt
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
   Department                Department                  @relation(fields: [departmentId], references: [id])
   Level                     Level                       @relation(fields: [levelId], references: [id])
   CourseAllocation          CourseAllocation[]
@@ -66,7 +66,7 @@ model Course {
 }
 
 model CourseAllocation {
-   id         String   @id @default(cuid())
+  id         String   @id @default(cuid())
   courseId   String
   lecturerId String
   semesterId String
@@ -82,7 +82,7 @@ model CourseAllocation {
 }
 
 model Department {
-   id           String         @id @default(cuid())
+  id           String         @id @default(cuid())
   code         String         @unique
   name         String
   description  String?
@@ -91,10 +91,11 @@ model Department {
   Announcement Announcement[]
   Course       Course[]
   User         User[]
+  StudentGroup StudentGroup[]
 }
 
 model ExamSession {
-   id         String   @id @default(cuid())
+  id         String   @id @default(cuid())
   courseId   String
   venueId    String
   semesterId String
@@ -114,7 +115,7 @@ model ExamSession {
 }
 
 model LecturerAvailability {
-   id         String   @id @default(cuid())
+  id         String   @id @default(cuid())
   lecturerId String
   dayOfWeek  Int
   startTime  String
@@ -128,7 +129,7 @@ model LecturerAvailability {
 }
 
 model Level {
-   id           String         @id @default(cuid())
+  id           String         @id @default(cuid())
   code         String         @unique
   name         String
   description  String?
@@ -137,10 +138,11 @@ model Level {
   Announcement Announcement[]
   Course       Course[]
   User         User[]
+  StudentGroup StudentGroup[]
 }
 
 model Notification {
-   id          String           @id @default(cuid())
+  id          String           @id @default(cuid())
   recipientId String
   title       String
   message     String
@@ -156,25 +158,27 @@ model Notification {
 }
 
 model Semester {
-   id                        String                      @id @default(cuid())
+  id                        String                      @id @default(cuid())
   year                      Int
   term                      String
   startDate                 DateTime
   endDate                   DateTime
   status                    String                      @default("UPCOMING")
-   createdAt                 DateTime                    @default(now())
-   updatedAt                 DateTime                    @updatedAt
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
   CourseAllocation          CourseAllocation[]
   ExamSession               ExamSession[]
   StudentCourseRegistration StudentCourseRegistration[]
   TimetableSession          TimetableSession[]
+  AcademicCalendarEvent     AcademicCalendarEvent[]
+  StudentGroup              StudentGroup[]
 
   @@unique([year, term])
   @@index([status])
 }
 
 model StudentCourseRegistration {
-   id           String    @id @default(cuid())
+  id           String    @id @default(cuid())
   studentId    String
   courseId     String
   semesterId   String
@@ -190,7 +194,7 @@ model StudentCourseRegistration {
 }
 
 model SupportTicket {
-   id         String         @id @default(cuid())
+  id         String         @id @default(cuid())
   userId     String
   category   TicketCategory
   subject    String
@@ -210,7 +214,7 @@ model SupportTicket {
 }
 
 model TimetableSession {
-   id         String        @id @default(cuid())
+  id         String        @id @default(cuid())
   courseId   String
   lecturerId String
   venueId    String
@@ -227,6 +231,7 @@ model TimetableSession {
   User       User          @relation(fields: [lecturerId], references: [id], onDelete: Cascade)
   Semester   Semester      @relation(fields: [semesterId], references: [id], onDelete: Cascade)
   Venue      Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  Attendance Attendance[]
 
   @@index([courseId, semesterId, dayOfWeek, startTime])
   @@index([dayOfWeek])
@@ -237,7 +242,7 @@ model TimetableSession {
 }
 
 model TimetableVersion {
-   id          String    @id @default(cuid())
+  id          String    @id @default(cuid())
   semesterId  String
   version     Int
   publishedAt DateTime?
@@ -250,7 +255,7 @@ model TimetableVersion {
 }
 
 model User {
-   id                        String                      @id @default(cuid())
+  id                        String                      @id @default(cuid())
   pugId                     String                      @unique
   email                     String                      @unique
   passwordHash              String
@@ -262,8 +267,8 @@ model User {
   status                    UserStatus                  @default(ACTIVE)
   departmentId              String?
   levelId                   String?
-   createdAt                 DateTime                    @default(now())
-   updatedAt                 DateTime                    @updatedAt
+  createdAt                 DateTime                    @default(now())
+  updatedAt                 DateTime                    @updatedAt
   Announcement              Announcement[]
   AuditLog                  AuditLog[]
   CourseAllocation          CourseAllocation[]
@@ -274,6 +279,11 @@ model User {
   TimetableSession          TimetableSession[]
   Department                Department?                 @relation(fields: [departmentId], references: [id])
   Level                     Level?                      @relation(fields: [levelId], references: [id])
+  AttendanceAsStudent       Attendance[]                @relation("StudentAttendance")
+  AttendanceAsMarker        Attendance[]                @relation("AttendanceMarker")
+  GroupMembers              GroupMember[]               @relation("GroupMembers")
+  ResourceBookings          ResourceBooking[]
+  NotificationPreference    NotificationPreference?
 
   @@index([departmentId])
   @@index([email])
@@ -283,7 +293,7 @@ model User {
 }
 
 model Venue {
-   id               String             @id @default(cuid())
+  id               String             @id @default(cuid())
   name             String
   location         String?
   capacity         Int
@@ -293,6 +303,7 @@ model Venue {
   updatedAt        DateTime
   ExamSession      ExamSession[]
   TimetableSession TimetableSession[]
+  ResourceBookings ResourceBooking[]
 
   @@index([name])
   @@index([type])
@@ -335,4 +346,138 @@ enum UserStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
+}
+
+// Feature #6: Attendance Tracking
+model Attendance {
+  id               String           @id @default(cuid())
+  sessionId        String
+  studentId        String
+  status           AttendanceStatus @default(PRESENT)
+  markedAt         DateTime         @default(now())
+  markedBy         String
+  notes            String?
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+  TimetableSession TimetableSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  Student          User             @relation("StudentAttendance", fields: [studentId], references: [id], onDelete: Cascade)
+  Marker           User             @relation("AttendanceMarker", fields: [markedBy], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, studentId])
+  @@index([sessionId])
+  @@index([studentId])
+  @@index([markedAt])
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
+// Feature #7: Academic Calendar
+model AcademicCalendarEvent {
+  id          String            @id @default(cuid())
+  title       String
+  description String?
+  startDate   DateTime
+  endDate     DateTime
+  type        CalendarEventType
+  isHoliday   Boolean           @default(false)
+  semesterId  String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  Semester    Semester?         @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+
+  @@index([startDate])
+  @@index([semesterId])
+  @@index([type])
+}
+
+enum CalendarEventType {
+  HOLIDAY
+  EXAM_PERIOD
+  REGISTRATION
+  BREAK
+  ORIENTATION
+  GRADUATION
+  OTHER
+}
+
+// Feature #14: Resource Booking
+model ResourceBooking {
+  id           String        @id @default(cuid())
+  venueId      String
+  resourceType String
+  bookedBy     String
+  startTime    DateTime
+  endTime      DateTime
+  purpose      String?
+  status       BookingStatus @default(CONFIRMED)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Venue        Venue         @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  Booker       User          @relation(fields: [bookedBy], references: [id], onDelete: Cascade)
+
+  @@index([venueId])
+  @@index([startTime])
+  @@index([bookedBy])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+// Feature #15: Student Groups/Cohorts
+model StudentGroup {
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  departmentId String?
+  levelId      String?
+  semesterId   String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  Department   Department?   @relation(fields: [departmentId], references: [id])
+  Level        Level?        @relation(fields: [levelId], references: [id])
+  Semester     Semester      @relation(fields: [semesterId], references: [id], onDelete: Cascade)
+  Members      GroupMember[]
+
+  @@index([semesterId])
+  @@index([departmentId])
+}
+
+model GroupMember {
+  id        String       @id @default(cuid())
+  groupId   String
+  studentId String
+  joinedAt  DateTime     @default(now())
+  Group     StudentGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  Student   User         @relation("GroupMembers", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, studentId])
+  @@index([groupId])
+  @@index([studentId])
+}
+
+// Feature #17: Notification Preferences
+model NotificationPreference {
+  id               String   @id @default(cuid())
+  userId           String   @unique
+  emailEnabled     Boolean  @default(true)
+  smsEnabled       Boolean  @default(false)
+  pushEnabled      Boolean  @default(true)
+  timetableChanges Boolean  @default(true)
+  classReminders   Boolean  @default(true)
+  announcements    Boolean  @default(true)
+  digestFrequency  String   @default("DAILY") // DAILY, WEEKLY, NEVER
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  User             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
