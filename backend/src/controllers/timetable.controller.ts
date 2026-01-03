@@ -537,7 +537,13 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
         },
       });
 
-      const allSessions = registrations.flatMap((reg) => reg.Course.TimetableSession);
+      // Map sessions with their course information
+      const allSessions = registrations.flatMap((reg) =>
+        reg.Course.TimetableSession.map((session) => ({
+          ...session,
+          Course: reg.Course, // Preserve Course relation
+        }))
+      );
 
       for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
         const checkDate = addDays(today, dayOffset);

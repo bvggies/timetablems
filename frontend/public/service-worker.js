@@ -2,8 +2,6 @@
 const CACHE_NAME = 'pug-timetable-v1';
 const urlsToCache = [
   '/',
-  '/static/js/bundle.js',
-  '/static/css/main.css',
   '/manifest.json',
 ];
 
@@ -11,9 +9,18 @@ const urlsToCache = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(urlsToCache);
+      // Cache resources individually to handle failures gracefully
+      return Promise.allSettled(
+        urlsToCache.map((url) =>
+          cache.add(url).catch((err) => {
+            console.log(`Failed to cache ${url}:`, err);
+          })
+        )
+      );
     })
   );
+  // Skip waiting to activate immediately
+  self.skipWaiting();
 });
 
 // Fetch event - serve from cache, fallback to network
