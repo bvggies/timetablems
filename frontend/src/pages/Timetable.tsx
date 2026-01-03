@@ -131,16 +131,16 @@ const Timetable: React.FC = () => {
                     <Card key={session.id} sx={{ mb: 1 }}>
                       <CardContent>
                         <Typography variant="subtitle1" fontWeight="bold">
-                          {session.course.code} - {session.course.title}
+                          {session.Course?.code || 'N/A'} - {session.Course?.title || 'N/A'}
                         </Typography>
                         <Typography variant="body2" color="text.secondary">
                           {session.startTime} - {session.endTime}
                         </Typography>
                         <Typography variant="body2">
-                          Venue: {session.venue.name}
+                          Venue: {session.Venue?.name || 'N/A'}
                         </Typography>
                         <Typography variant="body2">
-                          Lecturer: {session.lecturer.firstName} {session.lecturer.lastName}
+                          Lecturer: {session.User?.firstName || ''} {session.User?.lastName || ''}
                         </Typography>
                         <Chip
                           label={session.status}

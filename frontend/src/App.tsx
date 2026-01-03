@@ -18,6 +18,7 @@ import Reports from './pages/admin/Reports';
 import Exams from './pages/Exams';
 import Support from './pages/Support';
 import Help from './pages/Help';
+import Students from './pages/Students';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(
@@ -56,6 +57,7 @@ function App() {
                       <Route path="/support" element={<Support />} />
                       <Route path="/help" element={<Help />} />
                       <Route path="/notifications" element={<Notifications />} />
+                      <Route path="/students" element={<Students />} />
                       <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       <Route path="*" element={<div>Page not found</div>} />
                     </Routes>
