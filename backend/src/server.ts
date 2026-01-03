@@ -72,10 +72,13 @@ app.use((err: any, req: express.Request, res: express.Response, next: express.Ne
 
 const PORT = env.PORT;
 
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-  logger.info(`Environment: ${env.NODE_ENV}`);
-});
+// Only start server if not in Vercel serverless environment
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+    logger.info(`Environment: ${env.NODE_ENV}`);
+  });
+}
 
 export default app;
 
