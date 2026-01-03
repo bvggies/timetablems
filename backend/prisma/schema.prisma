@@ -73,7 +73,6 @@ model User {
   courseAllocations    CourseAllocation[]
   studentRegistrations StudentCourseRegistration[]
   timetableSessions    TimetableSession[]
-  examSessions         ExamSession[]
   notifications        Notification[]
   supportTickets       SupportTicket[]
   auditLogs            AuditLog[]           @relation("ActorUser")
