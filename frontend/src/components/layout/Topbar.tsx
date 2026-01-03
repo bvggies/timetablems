@@ -12,10 +12,11 @@ import {
   Switch,
   FormControlLabel,
   useTheme,
+  alpha,
+  Tooltip,
 } from '@mui/material';
 import {
   Notifications as NotificationsIcon,
-  AccountCircle,
   Logout,
   Settings,
   Brightness4,
@@ -46,7 +47,7 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
       const response = await api.get('/notifications/unread-count');
       return response.data;
     },
-    refetchInterval: 30000, // Refetch every 30 seconds
+    refetchInterval: 30000,
   });
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -69,53 +70,110 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
   };
 
   return (
-    <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-      <Toolbar>
+    <AppBar 
+      position="fixed" 
+      sx={{ 
+        zIndex: (theme) => theme.zIndex.drawer + 1,
+        background: theme.palette.mode === 'light'
+          ? 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)'
+          : 'linear-gradient(135deg, #1e293b 0%, #334155 100%)',
+        boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06)',
+      }}
+    >
+      <Toolbar sx={{ px: { xs: 2, sm: 3 } }}>
         <IconButton
           color="inherit"
           aria-label="open drawer"
           edge="start"
           onClick={onMenuClick}
-          sx={{ mr: 2 }}
+          sx={{ 
+            mr: 2,
+            '&:hover': {
+              background: alpha(theme.palette.common.white, 0.1),
+            },
+          }}
         >
           <MenuIcon />
         </IconButton>
-        <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-          PUG Timetable Management System
+        <Typography 
+          variant="h6" 
+          noWrap 
+          component="div" 
+          sx={{ 
+            flexGrow: 1,
+            fontWeight: 700,
+            fontSize: { xs: '1rem', sm: '1.25rem' },
+            letterSpacing: '-0.02em',
+          }}
+        >
+          PUG Timetable System
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <FormControlLabel
-            control={
-              <Switch
-                checked={isDarkMode}
-                onChange={onThemeToggle}
-                icon={<Brightness7 />}
-                checkedIcon={<Brightness4 />}
-              />
-            }
-            label=""
-          />
-          <IconButton
-            color="inherit"
-            onClick={(e) => setNotificationAnchor(e.currentTarget)}
-          >
-            <Badge badgeContent={unreadCount?.count || 0} color="error">
-              <NotificationsIcon />
-            </Badge>
-          </IconButton>
-          <IconButton
-            size="large"
-            edge="end"
-            aria-label="account of current user"
-            aria-controls="primary-search-account-menu"
-            aria-haspopup="true"
-            onClick={handleProfileMenuOpen}
-            color="inherit"
-          >
-            <Avatar sx={{ width: 32, height: 32 }}>
-              {user?.firstName?.[0] || 'U'}
-            </Avatar>
-          </IconButton>
+          <Tooltip title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={isDarkMode}
+                  onChange={onThemeToggle}
+                  icon={<Brightness7 sx={{ color: 'white' }} />}
+                  checkedIcon={<Brightness4 sx={{ color: 'white' }} />}
+                  sx={{
+                    '& .MuiSwitch-switchBase.Mui-checked': {
+                      color: 'white',
+                    },
+                    '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                      backgroundColor: alpha(theme.palette.common.white, 0.3),
+                    },
+                  }}
+                />
+              }
+              label=""
+            />
+          </Tooltip>
+          <Tooltip title="Notifications">
+            <IconButton
+              color="inherit"
+              onClick={(e) => setNotificationAnchor(e.currentTarget)}
+              sx={{
+                '&:hover': {
+                  background: alpha(theme.palette.common.white, 0.1),
+                },
+              }}
+            >
+              <Badge badgeContent={unreadCount?.count || 0} color="error">
+                <NotificationsIcon />
+              </Badge>
+            </IconButton>
+          </Tooltip>
+          <Tooltip title="Account settings">
+            <IconButton
+              size="large"
+              edge="end"
+              aria-label="account of current user"
+              aria-controls="primary-search-account-menu"
+              aria-haspopup="true"
+              onClick={handleProfileMenuOpen}
+              color="inherit"
+              sx={{
+                '&:hover': {
+                  background: alpha(theme.palette.common.white, 0.1),
+                },
+              }}
+            >
+              <Avatar 
+                sx={{ 
+                  width: 36, 
+                  height: 36,
+                  background: alpha(theme.palette.common.white, 0.2),
+                  color: 'white',
+                  fontWeight: 600,
+                  border: `2px solid ${alpha(theme.palette.common.white, 0.3)}`,
+                }}
+              >
+                {user?.firstName?.[0] || 'U'}
+              </Avatar>
+            </IconButton>
+          </Tooltip>
         </Box>
         <Menu
           anchorEl={anchorEl}
@@ -123,20 +181,52 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
           onClose={handleMenuClose}
           transformOrigin={{ horizontal: 'right', vertical: 'top' }}
           anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+          PaperProps={{
+            sx: {
+              mt: 1.5,
+              minWidth: 200,
+              borderRadius: 2,
+              boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
+            },
+          }}
         >
-          <MenuItem onClick={handleProfile}>
-            <Settings sx={{ mr: 1 }} /> Profile
+          <MenuItem onClick={handleProfile} sx={{ borderRadius: 1, mx: 1, my: 0.5 }}>
+            <Settings sx={{ mr: 1.5, fontSize: 20 }} /> 
+            <Typography>Profile Settings</Typography>
           </MenuItem>
-          <MenuItem onClick={handleLogout}>
-            <Logout sx={{ mr: 1 }} /> Logout
+          <MenuItem 
+            onClick={handleLogout} 
+            sx={{ 
+              borderRadius: 1, 
+              mx: 1, 
+              my: 0.5,
+              color: 'error.main',
+            }}
+          >
+            <Logout sx={{ mr: 1.5, fontSize: 20 }} /> 
+            <Typography>Logout</Typography>
           </MenuItem>
         </Menu>
         <Menu
           anchorEl={notificationAnchor}
           open={Boolean(notificationAnchor)}
           onClose={() => setNotificationAnchor(null)}
+          PaperProps={{
+            sx: {
+              mt: 1.5,
+              minWidth: 250,
+              borderRadius: 2,
+              boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05)',
+            },
+          }}
         >
-          <MenuItem onClick={() => navigate('/notifications')}>
+          <MenuItem 
+            onClick={() => {
+              navigate('/notifications');
+              setNotificationAnchor(null);
+            }}
+            sx={{ borderRadius: 1, mx: 1, my: 0.5 }}
+          >
             View all notifications
           </MenuItem>
         </Menu>
@@ -146,4 +236,3 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
 };
 
 export default Topbar;
-

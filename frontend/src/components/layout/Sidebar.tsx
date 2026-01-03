@@ -11,6 +11,9 @@ import {
   useTheme,
   useMediaQuery,
   IconButton,
+  Box,
+  Typography,
+  Avatar,
 } from '@mui/material';
 import {
   Dashboard,
@@ -27,7 +30,7 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/auth';
 
-const drawerWidth = 240;
+const drawerWidth = 280;
 
 interface SidebarProps {
   open: boolean;
@@ -77,37 +80,95 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     <>
       <Toolbar
         sx={{
+          background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+          color: 'white',
+          minHeight: '80px !important',
           display: 'flex',
           alignItems: 'center',
-          justifyContent: 'flex-end',
-          px: [1],
+          justifyContent: 'space-between',
+          px: 2,
         }}
       >
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Avatar
+            sx={{
+              width: 40,
+              height: 40,
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              fontWeight: 600,
+            }}
+          >
+            {user?.firstName?.[0] || 'P'}
+          </Avatar>
+          <Box>
+            <Typography variant="subtitle2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+              {user?.firstName} {user?.lastName}
+            </Typography>
+            <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.75rem' }}>
+              {user?.role || 'User'}
+            </Typography>
+          </Box>
+        </Box>
         {isMobile && (
-          <IconButton onClick={onClose}>
+          <IconButton onClick={onClose} sx={{ color: 'white' }}>
             <ChevronLeft />
           </IconButton>
         )}
       </Toolbar>
       <Divider />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
-              onClick={() => handleNavigation(item.path)}
-            >
-              <ListItemIcon
+      <List sx={{ px: 1.5, py: 2 }}>
+        {menuItems.map((item) => {
+          const isSelected = location.pathname === item.path;
+          return (
+            <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
+              <ListItemButton
+                selected={isSelected}
+                onClick={() => handleNavigation(item.path)}
                 sx={{
-                  color: location.pathname === item.path ? 'primary.main' : 'inherit',
+                  borderRadius: 2,
+                  py: 1.25,
+                  px: 2,
+                  transition: 'all 0.2s ease-in-out',
+                  '&.Mui-selected': {
+                    background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%)',
+                    color: theme.palette.mode === 'light' ? '#6366f1' : '#a5b4fc',
+                    '&:hover': {
+                      background: 'linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%)',
+                    },
+                    '& .MuiListItemIcon-root': {
+                      color: theme.palette.mode === 'light' ? '#6366f1' : '#a5b4fc',
+                    },
+                  },
+                  '&:hover': {
+                    background: theme.palette.mode === 'light' 
+                      ? 'rgba(99, 102, 241, 0.08)' 
+                      : 'rgba(129, 140, 248, 0.1)',
+                    transform: 'translateX(4px)',
+                  },
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+                <ListItemIcon
+                  sx={{
+                    color: isSelected 
+                      ? (theme.palette.mode === 'light' ? '#6366f1' : '#a5b4fc')
+                      : 'inherit',
+                    minWidth: 40,
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={item.text}
+                  primaryTypographyProps={{
+                    fontWeight: isSelected ? 600 : 500,
+                    fontSize: '0.9375rem',
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          );
+        })}
       </List>
     </>
   );
@@ -123,6 +184,10 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         '& .MuiDrawer-paper': {
           width: drawerWidth,
           boxSizing: 'border-box',
+          borderRight: 'none',
+          boxShadow: theme.palette.mode === 'light' 
+            ? '2px 0 8px rgba(0,0,0,0.05)' 
+            : '2px 0 8px rgba(0,0,0,0.3)',
         },
       }}
     >
@@ -132,4 +197,3 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 };
 
 export default Sidebar;
-
