@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/database';
+import prisma from '../config/database';
 
 // Create student group
 export const createGroup = async (req: Request, res: Response) => {
@@ -182,13 +182,13 @@ export const getGroupTimetable = async (req: Request, res: Response) => {
     }
 
     // Aggregate timetable sessions from all group members
-    const sessions = group.Members.flatMap((member) =>
-      member.Student.StudentCourseRegistration.flatMap((reg) => reg.Course.TimetableSession)
+    const sessions = group.Members.flatMap((member: any) =>
+      member.Student.StudentCourseRegistration.flatMap((reg: any) => reg.Course.TimetableSession)
     );
 
     // Remove duplicates
     const uniqueSessions = Array.from(
-      new Map(sessions.map((s) => [s.id, s])).values()
+      new Map(sessions.map((s: any) => [s.id, s])).values()
     );
 
     res.json({

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/database';
+import prisma from '../config/database';
 import { createNotification } from '../services/notification.service';
 
 // Create announcement (Admin only)

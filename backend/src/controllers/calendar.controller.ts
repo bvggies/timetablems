@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/database';
+import prisma from '../config/database';
 
 // Get calendar events
 export const getCalendarEvents = async (req: Request, res: Response) => {

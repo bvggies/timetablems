@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/database';
+import prisma from '../config/database';
 
 // Get user's notification preferences
 export const getPreferences = async (req: Request, res: Response) => {

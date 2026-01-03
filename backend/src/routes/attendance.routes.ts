@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
-import { requireRole } from '../middleware/rbac';
+import { requireLecturer } from '../middleware/rbac';
 import * as attendanceController from '../controllers/attendance.controller';
 
 const router = Router();
@@ -9,10 +9,10 @@ const router = Router();
 router.use(authenticate);
 
 // Mark attendance (Lecturer/Admin)
-router.post('/sessions/:sessionId/attendance', requireRole(['LECTURER', 'ADMIN']), attendanceController.markAttendance);
+router.post('/sessions/:sessionId/attendance', requireLecturer, attendanceController.markAttendance);
 
 // Bulk mark attendance
-router.post('/sessions/:sessionId/attendance/bulk', requireRole(['LECTURER', 'ADMIN']), attendanceController.bulkMarkAttendance);
+router.post('/sessions/:sessionId/attendance/bulk', requireLecturer, attendanceController.bulkMarkAttendance);
 
 // Get attendance for a session
 router.get('/sessions/:sessionId/attendance', attendanceController.getSessionAttendance);

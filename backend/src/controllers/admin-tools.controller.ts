@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/database';
+import prisma from '../config/database';
 
 // Get system health
 export const getSystemHealth = async (req: Request, res: Response) => {

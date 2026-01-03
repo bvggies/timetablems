@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { prisma } from '../config/database';
+import prisma from '../config/database';
 import { logger } from '../utils/logger';
 
 // Feature #16: Integration Features - LMS/SIS Sync

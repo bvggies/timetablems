@@ -3,15 +3,21 @@ import prisma from '../config/database';
 import { logger } from '../utils/logger';
 import * as XLSX from 'xlsx';
 
+// Extend Express Request to include multer file
+interface MulterRequest extends Request {
+  file?: Express.Multer.File;
+}
+
 // Feature #4: Bulk Import/Export
 export const importCourses = async (req: Request, res: Response): Promise<void> => {
   try {
-    if (!req.file) {
+    const multerReq = req as MulterRequest;
+    if (!multerReq.file) {
       res.status(400).json({ error: 'No file uploaded' });
       return;
     }
 
-    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const workbook = XLSX.read(multerReq.file.buffer, { type: 'buffer' });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
 
@@ -27,6 +33,7 @@ export const importCourses = async (req: Request, res: Response): Promise<void> 
             departmentId: row.departmentId || row['Department ID'],
             levelId: row.levelId || row['Level ID'],
             expectedSize: parseInt(row.expectedSize || row['Expected Size'] || '50'),
+            updatedAt: new Date(),
           },
         });
         courses.push(course);
@@ -44,12 +51,13 @@ export const importCourses = async (req: Request, res: Response): Promise<void> 
 
 export const importVenues = async (req: Request, res: Response): Promise<void> => {
   try {
-    if (!req.file) {
+    const multerReq = req as MulterRequest;
+    if (!multerReq.file) {
       res.status(400).json({ error: 'No file uploaded' });
       return;
     }
 
-    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const workbook = XLSX.read(multerReq.file.buffer, { type: 'buffer' });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
 
@@ -63,6 +71,7 @@ export const importVenues = async (req: Request, res: Response): Promise<void> =
             capacity: parseInt(row.capacity || row['Capacity'] || '50'),
             type: row.type || row['Type'] || 'HALL',
             resources: row.resources ? JSON.stringify(row.resources.split(',').map((r: string) => r.trim())) : null,
+            updatedAt: new Date(),
           },
         });
         venues.push(venue);
@@ -80,12 +89,13 @@ export const importVenues = async (req: Request, res: Response): Promise<void> =
 
 export const importUsers = async (req: Request, res: Response): Promise<void> => {
   try {
-    if (!req.file) {
+    const multerReq = req as MulterRequest;
+    if (!multerReq.file) {
       res.status(400).json({ error: 'No file uploaded' });
       return;
     }
 
-    const workbook = XLSX.read(req.file.buffer, { type: 'buffer' });
+    const workbook = XLSX.read(multerReq.file.buffer, { type: 'buffer' });
     const sheet = workbook.Sheets[workbook.SheetNames[0]];
     const data = XLSX.utils.sheet_to_json(sheet);
 
@@ -105,6 +115,7 @@ export const importUsers = async (req: Request, res: Response): Promise<void> =>
             departmentId: row.departmentId || row['Department ID'] || null,
             levelId: row.levelId || row['Level ID'] || null,
             status: row.status || row['Status'] || 'ACTIVE',
+            updatedAt: new Date(),
           },
         });
         users.push(user);
@@ -119,4 +130,3 @@ export const importUsers = async (req: Request, res: Response): Promise<void> =>
     res.status(500).json({ error: 'Failed to import users' });
   }
 };
-

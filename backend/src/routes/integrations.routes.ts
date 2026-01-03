@@ -1,12 +1,12 @@
 import { Router } from 'express';
 import { authenticate } from '../middleware/auth';
-import { requireRole } from '../middleware/rbac';
+import { requireAdmin } from '../middleware/rbac';
 import * as integrationsController from '../controllers/integrations.controller';
 
 const router = Router();
 
 router.use(authenticate);
-router.use(requireRole(['ADMIN']));
+router.use(requireAdmin);
 
 router.get('/status', integrationsController.getIntegrationStatus);
 router.post('/lms/sync', integrationsController.syncLMS);

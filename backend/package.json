@@ -15,7 +15,11 @@
     "lint": "eslint src --ext .ts",
     "type-check": "npx tsc --noEmit"
   },
-  "keywords": ["timetable", "management", "api"],
+  "keywords": [
+    "timetable",
+    "management",
+    "api"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -29,6 +33,7 @@
     "@types/node": "^20.10.5",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
+    "date-fns": "^2.30.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-rate-limit": "^7.1.5",

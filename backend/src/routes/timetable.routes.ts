@@ -18,8 +18,8 @@ const router = Router();
 
 router.get('/', authenticate, getTimetable);
 router.get('/next-class', authenticate, getNextClass);
-router.get('/versions', authenticate, requireRole(['ADMIN']), getTimetableVersions);
-router.post('/rollback', authenticate, requireRole(['ADMIN']), rollbackTimetable);
+router.get('/versions', authenticate, requireAdmin, getTimetableVersions);
+router.post('/rollback', authenticate, requireAdmin, rollbackTimetable);
 router.post('/sessions', authenticate, requireAdmin, createSession);
 router.put('/sessions/:id', authenticate, requireAdmin, updateSession);
 router.delete('/sessions/:id', authenticate, requireAdmin, deleteSession);
