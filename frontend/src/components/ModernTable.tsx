@@ -19,23 +19,27 @@ interface Column {
   minWidth?: number;
   align?: 'right' | 'left' | 'center';
   format?: (value: any) => React.ReactNode;
+  render?: (row: any) => React.ReactNode;
 }
 
 interface ModernTableProps {
   columns: Column[];
-  rows: any[];
+  data?: any[];
+  rows?: any[];
   onRowClick?: (row: any) => void;
   emptyMessage?: string;
 }
 
 const ModernTable: React.FC<ModernTableProps> = ({
   columns,
+  data,
   rows,
   onRowClick,
   emptyMessage = 'No data available',
 }) => {
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const tableRows = data || rows || [];
 
   return (
     <TableContainer
@@ -79,7 +83,7 @@ const ModernTable: React.FC<ModernTableProps> = ({
           </TableRow>
         </TableHead>
         <TableBody>
-          {rows.length === 0 ? (
+          {tableRows.length === 0 ? (
             <TableRow>
               <TableCell colSpan={columns.length} align="center" sx={{ py: 6 }}>
                 <Box
@@ -96,7 +100,7 @@ const ModernTable: React.FC<ModernTableProps> = ({
               </TableCell>
             </TableRow>
           ) : (
-            rows.map((row, index) => (
+            tableRows.map((row, index) => (
               <TableRow
                 key={row.id || index}
                 onClick={() => onRowClick?.(row)}
@@ -119,6 +123,13 @@ const ModernTable: React.FC<ModernTableProps> = ({
                 }}
               >
                 {columns.map((column) => {
+                  if (column.render) {
+                    return (
+                      <TableCell key={column.id} align={column.align || 'left'}>
+                        {column.render(row)}
+                      </TableCell>
+                    );
+                  }
                   const value = row[column.id];
                   return (
                     <TableCell key={column.id} align={column.align || 'left'}>

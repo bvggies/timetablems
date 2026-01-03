@@ -154,25 +154,28 @@ const SystemHealth: React.FC = () => {
                   {
                     id: 'action',
                     label: 'Action',
-                    render: (row: any) => row.action,
+                    render: (row: any) => <Typography variant="body2">{row.action}</Typography>,
                   },
                   {
                     id: 'entity',
                     label: 'Entity',
-                    render: (row: any) => row.entity,
+                    render: (row: any) => <Typography variant="body2">{row.entity}</Typography>,
                   },
                   {
                     id: 'user',
                     label: 'User',
-                    render: (row: any) =>
-                      row.User
-                        ? `${row.User.firstName} ${row.User.lastName}`
-                        : 'System',
+                    render: (row: any) => (
+                      <Typography variant="body2">
+                        {row.User ? `${row.User.firstName} ${row.User.lastName}` : 'System'}
+                      </Typography>
+                    ),
                   },
                   {
                     id: 'timestamp',
                     label: 'Timestamp',
-                    render: (row: any) => new Date(row.createdAt).toLocaleString(),
+                    render: (row: any) => (
+                      <Typography variant="body2">{new Date(row.createdAt).toLocaleString()}</Typography>
+                    ),
                   },
                 ]}
               />

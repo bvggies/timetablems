@@ -34,7 +34,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
-import { useAuth } from '../store/authStore';
+import { authService } from '../services/auth';
 import ModernTable from '../components/ModernTable';
 
 const Attendance: React.FC = () => {
@@ -129,7 +129,7 @@ const Attendance: React.FC = () => {
       case 'EXCUSED':
         return <Block />;
       default:
-        return null;
+        return undefined;
     }
   };
 
@@ -157,14 +157,17 @@ const Attendance: React.FC = () => {
                 {
                   id: 'status',
                   label: 'Status',
-                  render: (row: any) => (
-                    <Chip
-                      icon={getStatusIcon(row.status)}
-                      label={row.status}
-                      color={getStatusColor(row.status) as any}
-                      size="small"
-                    />
-                  ),
+                  render: (row: any) => {
+                    const icon = getStatusIcon(row.status);
+                    return (
+                      <Chip
+                        {...(icon && { icon })}
+                        label={row.status}
+                        color={getStatusColor(row.status) as any}
+                        size="small"
+                      />
+                    );
+                  },
                 },
                 {
                   id: 'notes',

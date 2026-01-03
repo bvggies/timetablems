@@ -26,6 +26,15 @@ import {
   Help,
   Menu as MenuIcon,
   ChevronLeft,
+  CheckCircle,
+  Event,
+  Announcement,
+  Group,
+  History,
+  Monitor,
+  Sync,
+  Person,
+  Settings,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/auth';
