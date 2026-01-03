@@ -559,7 +559,13 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
       const allSessions = registrations.flatMap((reg) =>
         reg.Course.TimetableSession.map((session) => ({
           ...session,
-          Course: reg.Course, // Preserve Course relation
+          Course: {
+            id: reg.Course.id,
+            code: reg.Course.code,
+            title: reg.Course.title,
+            credits: reg.Course.credits,
+            description: reg.Course.description,
+          }, // Preserve Course relation without nested sessions
         }))
       );
 
