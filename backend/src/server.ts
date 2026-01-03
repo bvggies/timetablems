@@ -20,6 +20,7 @@ import reportsRoutes from './routes/reports.routes';
 import examsRoutes from './routes/exams.routes';
 import supportRoutes from './routes/support.routes';
 import dashboardRoutes from './routes/dashboard.routes';
+import importRoutes from './routes/import.routes';
 
 const app = express();
 
@@ -230,6 +231,7 @@ app.use('/api/reports', reportsRoutes);
 app.use('/api/exams', examsRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/import', importRoutes);
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {

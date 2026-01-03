@@ -23,7 +23,6 @@ export const getTimetable = async (req: Request, res: Response): Promise<void> =
 
     // Role-based filtering
     if (user.role === 'STUDENT') {
-      // Get student's registered courses
       const registrations = await prisma.studentCourseRegistration.findMany({
         where: {
           studentId: user.userId,
@@ -36,14 +35,12 @@ export const getTimetable = async (req: Request, res: Response): Promise<void> =
       if (courseIds.length > 0) {
         where.courseId = { in: courseIds };
       } else {
-        // No registered courses, return empty
         res.json([]);
         return;
       }
     } else if (user.role === 'LECTURER') {
       where.lecturerId = user.userId;
     }
-    // Admin sees all
 
     const sessions = await prisma.timetableSession.findMany({
       where: {
@@ -93,7 +90,6 @@ export const createSession = async (req: Request, res: Response): Promise<void> 
       endTime,
     } = req.body;
 
-    // Check for conflicts
     const conflicts = await checkConflicts(
       courseId,
       lecturerId,
@@ -151,7 +147,6 @@ export const updateSession = async (req: Request, res: Response): Promise<void> 
       endTime,
     } = req.body;
 
-    // Check for conflicts (excluding current session)
     const conflicts = await checkConflicts(
       courseId,
       lecturerId,
@@ -210,7 +205,6 @@ export const generateTimetableHandler = async (req: Request, res: Response): Pro
   try {
     const options: GenerationOptions = req.body;
     
-    // Validate options
     if (!options.semesterId || !options.timeSlots || !options.daysOfWeek) {
       res.status(400).json({ error: 'Missing required generation options' });
       return;
@@ -233,7 +227,6 @@ export const publishTimetable = async (req: Request, res: Response): Promise<voi
       return;
     }
 
-    // Update all DRAFT sessions to PUBLISHED
     const result = await prisma.timetableSession.updateMany({
       where: {
         semesterId,
@@ -295,7 +288,6 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
     const userId = req.user.userId;
     const userRole = req.user.role;
 
-    // Get current active semester
     const currentSemester = await prisma.semester.findFirst({
       where: { status: 'ACTIVE' },
       orderBy: { startDate: 'desc' },
@@ -312,7 +304,6 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
     let nextSession: any = null;
 
     if (userRole === 'STUDENT') {
-      // Get student's registered courses
       const registrations = await prisma.studentCourseRegistration.findMany({
         where: {
           studentId: userId,
@@ -337,10 +328,8 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
         },
       });
 
-      // Flatten all sessions from registered courses
       const allSessions = registrations.flatMap((reg) => reg.Course.TimetableSession);
 
-      // Find next session
       for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
         const checkDate = addDays(today, dayOffset);
         const checkDayOfWeek = checkDate.getDay();
@@ -348,14 +337,12 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
         const sessionsOnDay = allSessions.filter((s) => s.dayOfWeek === checkDayOfWeek);
 
         if (sessionsOnDay.length > 0) {
-          // Sort by start time
           sessionsOnDay.sort((a, b) => {
             const [aHours, aMins] = a.startTime.split(':').map(Number);
             const [bHours, bMins] = b.startTime.split(':').map(Number);
             return aHours * 60 + aMins - (bHours * 60 + bMins);
           });
 
-          // If checking today, only include future sessions
           if (dayOffset === 0) {
             const [nowHours, nowMins] = [now.getHours(), now.getMinutes()];
             const futureSessions = sessionsOnDay.filter((s) => {
@@ -373,7 +360,6 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
         }
       }
     } else if (userRole === 'LECTURER') {
-      // Get lecturer's assigned sessions
       const sessions = await prisma.timetableSession.findMany({
         where: {
           lecturerId: userId,
@@ -391,7 +377,6 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
         ],
       });
 
-      // Find next session
       for (let dayOffset = 0; dayOffset < 14; dayOffset++) {
         const checkDate = addDays(today, dayOffset);
         const checkDayOfWeek = checkDate.getDay();

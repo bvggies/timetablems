@@ -33,6 +33,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
 import { authService } from '../services/auth';
 import ModernTable from '../components/ModernTable';
+import BulkImport from '../components/BulkImport';
 
 const Venues: React.FC = () => {
   const theme = useTheme();
@@ -271,18 +272,24 @@ const Venues: React.FC = () => {
           </Typography>
         </Box>
         {isAdmin && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => handleOpen()}
-            sx={{
-              borderRadius: 2,
-              px: 3,
-              py: 1.25,
-            }}
-          >
-            Add Venue
-          </Button>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <BulkImport
+              type="venues"
+              onSuccess={() => queryClient.invalidateQueries({ queryKey: ['venues'] })}
+            />
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={() => handleOpen()}
+              sx={{
+                borderRadius: 2,
+                px: 3,
+                py: 1.25,
+              }}
+            >
+              Add Venue
+            </Button>
+          </Box>
         )}
       </Box>
 

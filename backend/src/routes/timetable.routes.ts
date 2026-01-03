@@ -24,4 +24,3 @@ router.post('/publish', authenticate, requireAdmin, publishTimetable);
 router.post('/check-conflicts', authenticate, requireAdmin, checkSessionConflicts);
 
 export default router;
-
