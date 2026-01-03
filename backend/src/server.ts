@@ -91,6 +91,105 @@ app.get('/', (req: express.Request, res: express.Response) => {
   });
 });
 
+// API root endpoint - List available API endpoints
+app.get('/api', (req: express.Request, res: express.Response) => {
+  res.json({
+    message: 'Timetable Management System API',
+    version: '1.0.0',
+    availableEndpoints: {
+      auth: {
+        base: '/api/auth',
+        endpoints: {
+          register: 'POST /api/auth/register',
+          login: 'POST /api/auth/login',
+          refresh: 'POST /api/auth/refresh',
+          logout: 'POST /api/auth/logout',
+          forgotPassword: 'POST /api/auth/forgot-password',
+          resetPassword: 'POST /api/auth/reset-password',
+        },
+      },
+      users: {
+        base: '/api/users',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        description: 'User management (Admin only)',
+      },
+      departments: {
+        base: '/api/departments',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        description: 'Department management',
+      },
+      levels: {
+        base: '/api/levels',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        description: 'Academic level management',
+      },
+      courses: {
+        base: '/api/courses',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        description: 'Course management',
+      },
+      venues: {
+        base: '/api/venues',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        description: 'Venue/lecture hall management',
+      },
+      timetable: {
+        base: '/api/timetable',
+        endpoints: {
+          list: 'GET /api/timetable',
+          create: 'POST /api/timetable',
+          update: 'PUT /api/timetable/:id',
+          delete: 'DELETE /api/timetable/:id',
+          generate: 'POST /api/timetable/generate',
+          publish: 'POST /api/timetable/publish',
+          checkConflicts: 'POST /api/timetable/check-conflicts',
+        },
+      },
+      registrations: {
+        base: '/api/registrations',
+        methods: ['GET', 'POST', 'DELETE'],
+        description: 'Student course registration',
+      },
+      semesters: {
+        base: '/api/semesters',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        description: 'Semester management',
+      },
+      exams: {
+        base: '/api/exams',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        endpoints: {
+          checkConflicts: 'POST /api/exams/check-conflicts',
+        },
+      },
+      notifications: {
+        base: '/api/notifications',
+        methods: ['GET', 'PUT'],
+        description: 'User notifications',
+      },
+      reports: {
+        base: '/api/reports',
+        endpoints: {
+          occupancy: 'GET /api/reports/occupancy',
+          workload: 'GET /api/reports/workload',
+          usage: 'GET /api/reports/usage',
+        },
+        description: 'Analytics and reports (Admin only)',
+      },
+      support: {
+        base: '/api/support',
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
+        description: 'Support ticket management',
+      },
+    },
+    authentication: {
+      type: 'JWT Bearer Token',
+      header: 'Authorization: Bearer <token>',
+      note: 'Most endpoints require authentication. Use /api/auth/login to obtain a token.',
+    },
+  });
+});
+
 // Health check
 app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
