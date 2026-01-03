@@ -521,15 +521,33 @@ export const getNextClass = async (req: Request, res: Response): Promise<void> =
         },
         include: {
           Course: {
-            include: {
+            select: {
+              id: true,
+              code: true,
+              title: true,
+              credits: true,
+              description: true,
               TimetableSession: {
                 where: {
                   status: 'PUBLISHED',
                   semesterId: currentSemester.id,
                 },
                 include: {
-                  Venue: true,
-                  User: true,
+                  Venue: {
+                    select: {
+                      id: true,
+                      name: true,
+                      location: true,
+                    },
+                  },
+                  User: {
+                    select: {
+                      id: true,
+                      firstName: true,
+                      lastName: true,
+                      email: true,
+                    },
+                  },
                 },
               },
             },
