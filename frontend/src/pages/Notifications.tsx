@@ -19,6 +19,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../services/api';
+import { authService } from '../services/auth';
 import { format } from 'date-fns';
 
 const Notifications: React.FC = () => {
@@ -27,8 +28,24 @@ const Notifications: React.FC = () => {
   const { data: notifications, isLoading } = useQuery({
     queryKey: ['notifications'],
     queryFn: async () => {
-      const response = await api.get('/notifications');
-      return response.data;
+      try {
+        const response = await api.get('/notifications');
+        return response.data;
+      } catch (error: any) {
+        // Handle 401 (unauthorized) gracefully
+        if (error.response?.status === 401) {
+          return [];
+        }
+        throw error;
+      }
+    },
+    enabled: authService.isAuthenticated(),
+    retry: (failureCount, error: any) => {
+      // Don't retry on 401 errors
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 
