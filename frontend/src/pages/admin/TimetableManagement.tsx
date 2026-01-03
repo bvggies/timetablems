@@ -34,6 +34,7 @@ import {
 } from '@mui/icons-material';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../services/api';
+import { authService } from '../../services/auth';
 import { format } from 'date-fns';
 
 const TimetableManagement: React.FC = () => {

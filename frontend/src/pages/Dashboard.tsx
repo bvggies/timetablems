@@ -238,10 +238,24 @@ const Dashboard: React.FC = () => {
         </Typography>
       </Box>
 
+      {/* Next Class Widget - For Students and Lecturers - Prominent position at top */}
+      {(userRole === 'STUDENT' || userRole === 'LECTURER') && (
+        <Box sx={{ mb: 3 }}>
+          <NextClassWidget />
+        </Box>
+      )}
+
       {/* Stat Cards Grid */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {statCards.map((card, index) => (
-          <Grid item xs={12} sm={6} md={4} lg={statCards.length > 3 ? 2 : 4} key={index}>
+          <Grid 
+            item 
+            xs={12} 
+            sm={6} 
+            md={4} 
+            lg={statCards.length > 3 ? 2 : 4} 
+            key={index}
+          >
             <Card
               sx={{
                 background: isDark 
@@ -316,15 +330,6 @@ const Dashboard: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-
-      {/* Next Class Widget - For Students and Lecturers */}
-      {(userRole === 'STUDENT' || userRole === 'LECTURER') && (
-        <Grid container spacing={3} sx={{ mb: 3 }}>
-          <Grid item xs={12} md={6} lg={4}>
-            <NextClassWidget />
-          </Grid>
-        </Grid>
-      )}
 
       {/* Charts Row */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
