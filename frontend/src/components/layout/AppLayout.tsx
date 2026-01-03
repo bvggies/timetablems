@@ -30,7 +30,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children, isDarkMode, onThemeTogg
         sx={{
           flexGrow: 1,
           p: 3,
-          width: { md: `calc(100% - ${sidebarOpen ? 240 : 0}px)` },
+          width: { md: `calc(100% - ${sidebarOpen ? 280 : 0}px)` },
           minHeight: '100vh',
           backgroundColor: theme.palette.background.default,
         }}
