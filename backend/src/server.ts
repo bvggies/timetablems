@@ -38,6 +38,59 @@ app.use(express.urlencoded({ extended: true }));
 // Rate limiting
 app.use('/api', apiRateLimiter);
 
+// Root endpoint - Backend information
+app.get('/', (req: express.Request, res: express.Response) => {
+  res.json({
+    name: 'Timetable Management System API',
+    version: '1.0.0',
+    description: 'Backend API for PUG Timetable Management System',
+    status: 'operational',
+    timestamp: new Date().toISOString(),
+    environment: env.NODE_ENV,
+    endpoints: {
+      health: '/health',
+      auth: {
+        register: 'POST /api/auth/register',
+        login: 'POST /api/auth/login',
+        refresh: 'POST /api/auth/refresh',
+        logout: 'POST /api/auth/logout',
+      },
+      users: 'GET,POST,PUT,DELETE /api/users',
+      departments: 'GET,POST,PUT,DELETE /api/departments',
+      levels: 'GET,POST,PUT,DELETE /api/levels',
+      courses: 'GET,POST,PUT,DELETE /api/courses',
+      venues: 'GET,POST,PUT,DELETE /api/venues',
+      timetable: {
+        list: 'GET /api/timetable',
+        create: 'POST /api/timetable',
+        generate: 'POST /api/timetable/generate',
+        publish: 'POST /api/timetable/publish',
+      },
+      registrations: 'GET,POST,DELETE /api/registrations',
+      semesters: 'GET,POST,PUT,DELETE /api/semesters',
+      exams: 'GET,POST,PUT,DELETE /api/exams',
+      notifications: 'GET,PUT /api/notifications',
+      reports: 'GET /api/reports',
+      support: 'GET,POST,PUT,DELETE /api/support',
+    },
+    documentation: {
+      github: 'https://github.com/bvggies/timetablems',
+      frontend: env.FRONTEND_URL,
+    },
+    features: [
+      'User Authentication (JWT + Refresh Tokens)',
+      'Role-Based Access Control (Student, Lecturer, Admin)',
+      'Timetable Generation & Management',
+      'Course Registration',
+      'Venue Management',
+      'Exam Scheduling',
+      'Notifications (In-app, Email, SMS)',
+      'Reports & Analytics',
+      'Support Ticket System',
+    ],
+  });
+});
+
 // Health check
 app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
