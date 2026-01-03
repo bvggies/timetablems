@@ -71,6 +71,7 @@ const commonTheme = {
   ] as any,
 };
 
+// Feature #18: Accessibility - Enhanced theme with high contrast support
 export const lightTheme = createTheme({
   ...commonTheme,
   palette: {

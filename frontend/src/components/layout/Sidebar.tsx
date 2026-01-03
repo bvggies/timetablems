@@ -58,16 +58,31 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     ...(user?.role === 'ADMIN' || user?.role === 'LECTURER'
       ? [{ text: 'Students', icon: <People />, path: '/students' }]
       : []),
+    ...(user?.role === 'ADMIN' || user?.role === 'LECTURER'
+      ? [{ text: 'Attendance', icon: <CheckCircle />, path: '/attendance' }]
+      : []),
+    { text: 'Calendar', icon: <Event />, path: '/calendar' },
+    { text: 'Announcements', icon: <Announcement />, path: '/announcements' },
     ...(user?.role === 'ADMIN'
       ? [
           { text: 'Venues', icon: <LocationOn />, path: '/venues' },
+          { text: 'Resource Booking', icon: <Event />, path: '/resources' },
+          { text: 'Student Groups', icon: <Group />, path: '/student-groups' },
           { text: 'Reports', icon: <Assessment />, path: '/reports' },
+          { text: 'Timetable Versions', icon: <History />, path: '/timetable/versions' },
+          { text: 'System Health', icon: <Monitor />, path: '/admin/health' },
+          { text: 'Integrations', icon: <Sync />, path: '/admin/integrations' },
         ]
+      : []),
+    ...(user?.role === 'LECTURER'
+      ? [{ text: 'Student Groups', icon: <Group />, path: '/student-groups' }]
       : []),
     { text: 'Exams', icon: <School />, path: '/exams' },
     { text: 'Notifications', icon: <Notifications />, path: '/notifications' },
     { text: 'Support Tickets', icon: <Help />, path: '/support' },
     { text: 'Help & FAQ', icon: <Help />, path: '/help' },
+    { text: 'Profile', icon: <Person />, path: '/profile' },
+    { text: 'Settings', icon: <Settings />, path: '/settings' },
   ];
 
   const handleNavigation = (path: string) => {

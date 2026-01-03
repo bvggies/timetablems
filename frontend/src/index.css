@@ -48,3 +48,45 @@ html {
   background: rgba(99, 102, 241, 0.2);
   color: inherit;
 }
+
+/* Feature #18: Accessibility - High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --contrast-multiplier: 1.5;
+  }
+  
+  body {
+    filter: contrast(1.2);
+  }
+}
+
+/* Feature #18: Accessibility - Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Feature #8: Mobile - Touch-friendly tap targets */
+@media (max-width: 768px) {
+  button,
+  a,
+  [role="button"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Larger touch targets for mobile */
+  .MuiButton-root {
+    padding: 12px 24px !important;
+  }
+  
+  /* Better spacing on mobile */
+  .MuiCard-root {
+    margin-bottom: 16px;
+  }
+}

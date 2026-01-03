@@ -29,6 +29,7 @@ import notificationPreferencesRoutes from './routes/notification-preferences.rou
 import searchRoutes from './routes/search.routes';
 import announcementsRoutes from './routes/announcements.routes';
 import adminToolsRoutes from './routes/admin-tools.routes';
+import integrationsRoutes from './routes/integrations.routes';
 
 const app = express();
 
@@ -248,6 +249,7 @@ app.use('/api/student-groups', studentGroupsRoutes);
 app.use('/api/notification-preferences', notificationPreferencesRoutes);
 app.use('/api/announcements', announcementsRoutes);
 app.use('/api/admin', adminToolsRoutes);
+app.use('/api/integrations', integrationsRoutes);
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {

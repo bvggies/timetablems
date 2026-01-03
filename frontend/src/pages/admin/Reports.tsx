@@ -38,7 +38,7 @@ const Reports: React.FC = () => {
   const { data: semesters } = useQuery({
     queryKey: ['semesters'],
     queryFn: async () => {
-      const response = await api.get('/semesters');
+      const response = await api.get('/api/semesters');
       return response.data;
     },
   });
@@ -47,7 +47,7 @@ const Reports: React.FC = () => {
     queryKey: ['reports', 'occupancy', selectedSemester],
     queryFn: async () => {
       const params = selectedSemester ? `?semesterId=${selectedSemester}` : '';
-      const response = await api.get(`/reports/occupancy${params}`);
+      const response = await api.get(`/api/reports/occupancy${params}`);
       return response.data;
     },
   });
@@ -56,7 +56,7 @@ const Reports: React.FC = () => {
     queryKey: ['reports', 'workload', selectedSemester],
     queryFn: async () => {
       const params = selectedSemester ? `?semesterId=${selectedSemester}` : '';
-      const response = await api.get(`/reports/workload${params}`);
+      const response = await api.get(`/api/reports/workload${params}`);
       return response.data;
     },
   });
@@ -64,7 +64,25 @@ const Reports: React.FC = () => {
   const { data: usageStats } = useQuery({
     queryKey: ['reports', 'usage'],
     queryFn: async () => {
-      const response = await api.get('/reports/usage');
+      const response = await api.get('/api/reports/usage');
+      return response.data;
+    },
+  });
+
+  // Feature #9: Advanced Analytics - Heatmap and Trends
+  const { data: heatmapData } = useQuery({
+    queryKey: ['reports', 'heatmap', selectedSemester],
+    queryFn: async () => {
+      const params = selectedSemester ? `?semesterId=${selectedSemester}` : '';
+      const response = await api.get(`/api/reports/heatmap${params}`);
+      return response.data;
+    },
+  });
+
+  const { data: trendsData } = useQuery({
+    queryKey: ['reports', 'trends'],
+    queryFn: async () => {
+      const response = await api.get('/api/reports/trends');
       return response.data;
     },
   });
