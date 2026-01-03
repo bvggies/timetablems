@@ -13,6 +13,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
   TextField,
   MenuItem,
@@ -288,6 +289,9 @@ const Exams: React.FC = () => {
               {editingExam ? 'Edit Exam' : 'Add New Exam'}
             </DialogTitle>
             <DialogContent>
+              <DialogContentText>
+                {editingExam ? 'Update the exam details below.' : 'Fill out the form to schedule a new exam.'}
+              </DialogContentText>
               {conflicts.length > 0 && (
                 <Alert severity="warning" sx={{ mb: 2 }}>
                   <Typography variant="subtitle2" gutterBottom>

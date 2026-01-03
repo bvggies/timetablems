@@ -14,6 +14,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
   TextField,
   MenuItem,
@@ -226,6 +227,9 @@ const Venues: React.FC = () => {
               {editingVenue ? 'Edit Venue' : 'Add New Venue'}
             </DialogTitle>
             <DialogContent>
+              <DialogContentText>
+                {editingVenue ? 'Update the venue details below.' : 'Fill out the form to add a new venue.'}
+              </DialogContentText>
               <TextField
                 fullWidth
                 label="Venue Name"

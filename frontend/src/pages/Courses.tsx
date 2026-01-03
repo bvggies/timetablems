@@ -215,6 +215,9 @@ const Courses: React.FC = () => {
               {editingCourse ? 'Edit Course' : 'Add New Course'}
             </DialogTitle>
             <DialogContent>
+              <DialogContentText>
+                {editingCourse ? 'Update the course details below.' : 'Fill out the form to add a new course.'}
+              </DialogContentText>
               <TextField
                 fullWidth
                 label="Course Code"

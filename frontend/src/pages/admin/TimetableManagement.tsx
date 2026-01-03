@@ -8,6 +8,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
   TextField,
   MenuItem,
@@ -329,6 +330,9 @@ const TimetableManagement: React.FC = () => {
             {editingSession ? 'Edit Session' : 'Add New Session'}
           </DialogTitle>
           <DialogContent>
+            <DialogContentText>
+              {editingSession ? 'Update the session details below.' : 'Fill out the form to create a new timetable session.'}
+            </DialogContentText>
             {conflicts.length > 0 && (
               <Alert severity="warning" sx={{ mb: 2 }}>
                 <Typography variant="subtitle2" gutterBottom>
@@ -448,6 +452,9 @@ const TimetableManagement: React.FC = () => {
       <Dialog open={generateDialogOpen} onClose={() => setGenerateDialogOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle>Auto-Generate Timetable</DialogTitle>
         <DialogContent>
+          <DialogContentText>
+            Configure the options below to automatically generate a timetable for the selected semester.
+          </DialogContentText>
           <Alert severity="info" sx={{ mb: 2 }}>
             This will generate timetable sessions based on course allocations, lecturer availability, and venue capacity.
           </Alert>

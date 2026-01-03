@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
   TextField,
   MenuItem,
@@ -272,6 +273,11 @@ const Support: React.FC = () => {
             {editingTicket && isAdmin ? 'Manage Ticket' : 'Create Support Ticket'}
           </DialogTitle>
           <DialogContent>
+            <DialogContentText>
+              {editingTicket && isAdmin
+                ? 'Update the ticket status and add admin notes.'
+                : 'Fill out the form below to create a support ticket.'}
+            </DialogContentText>
             {editingTicket && isAdmin ? (
               <>
                 <Alert severity="info" sx={{ mb: 2 }}>

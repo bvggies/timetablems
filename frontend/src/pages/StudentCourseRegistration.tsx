@@ -15,6 +15,7 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
+  DialogContentText,
   DialogActions,
   TextField,
   MenuItem,
@@ -249,6 +250,9 @@ const StudentCourseRegistration: React.FC = () => {
       <Dialog open={registerDialogOpen} onClose={() => setRegisterDialogOpen(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Register for Course</DialogTitle>
         <DialogContent>
+          <DialogContentText>
+            Select a semester to register for the selected course.
+          </DialogContentText>
           {selectedCourse && (
             <Box>
               <Typography variant="h6" gutterBottom>
