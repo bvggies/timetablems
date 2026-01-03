@@ -150,9 +150,9 @@ export const notifyTimetableChange = async (
     const session = await prisma.timetableSession.findUnique({
       where: { id: sessionId },
       include: {
-        course: true,
-        lecturer: true,
-        semester: true,
+        Course: true,
+        User: true,
+        Semester: true,
       },
     });
 
