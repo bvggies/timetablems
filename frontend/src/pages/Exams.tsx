@@ -247,14 +247,14 @@ const Exams: React.FC = () => {
                         <TableCell>
                           <Box>
                             <Typography variant="body2" fontWeight="bold">
-                              {exam.course.code}
+                              {exam.Course?.code || 'N/A'}
                             </Typography>
                             <Typography variant="caption" color="text.secondary">
-                              {exam.course.title}
+                              {exam.Course?.title || 'N/A'}
                             </Typography>
                           </Box>
                         </TableCell>
-                        <TableCell>{exam.venue.name}</TableCell>
+                        <TableCell>{exam.Venue?.name || 'N/A'}</TableCell>
                         {isAdmin && (
                           <TableCell>
                             <IconButton size="small" onClick={() => handleOpen(exam)}>

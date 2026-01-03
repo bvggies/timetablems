@@ -149,8 +149,8 @@ const StudentCourseRegistration: React.FC = () => {
                     </TableCell>
                     <TableCell>{course.title}</TableCell>
                     <TableCell>{course.credits}</TableCell>
-                    <TableCell>{course.department?.name || 'N/A'}</TableCell>
-                    <TableCell>{course.level?.name || 'N/A'}</TableCell>
+                    <TableCell>{course.Department?.name || 'N/A'}</TableCell>
+                    <TableCell>{course.Level?.name || 'N/A'}</TableCell>
                     <TableCell>
                       {isRegistered ? (
                         <Chip label="Registered" color="success" size="small" icon={<CheckCircle />} />
@@ -217,10 +217,10 @@ const StudentCourseRegistration: React.FC = () => {
                 myRegistrations?.map((registration: any) => (
                   <TableRow key={registration.id}>
                     <TableCell>
-                      <Chip label={registration.course.code} color="primary" variant="outlined" />
+                      <Chip label={registration.Course?.code || 'N/A'} color="primary" variant="outlined" />
                     </TableCell>
-                    <TableCell>{registration.course.title}</TableCell>
-                    <TableCell>{registration.course.credits}</TableCell>
+                    <TableCell>{registration.Course?.title || 'N/A'}</TableCell>
+                    <TableCell>{registration.Course?.credits || 'N/A'}</TableCell>
                     <TableCell>
                       {new Date(registration.registeredAt).toLocaleDateString()}
                     </TableCell>

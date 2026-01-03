@@ -229,7 +229,7 @@ const Support: React.FC = () => {
                   </TableCell>
                   {isAdmin && (
                     <TableCell>
-                      {ticket.user.firstName} {ticket.user.lastName}
+                      {ticket.User?.firstName || ''} {ticket.User?.lastName || ''}
                     </TableCell>
                   )}
                   <TableCell>
@@ -291,8 +291,8 @@ const Support: React.FC = () => {
                     <strong>Category:</strong> {getCategoryLabel(editingTicket.category)}
                   </Typography>
                   <Typography variant="body2">
-                    <strong>User:</strong> {editingTicket.user.firstName}{' '}
-                    {editingTicket.user.lastName} ({editingTicket.user.email})
+                    <strong>User:</strong> {editingTicket.User?.firstName || ''}{' '}
+                    {editingTicket.User?.lastName || ''} ({editingTicket.User?.email || 'N/A'})
                   </Typography>
                 </Alert>
                 <TextField

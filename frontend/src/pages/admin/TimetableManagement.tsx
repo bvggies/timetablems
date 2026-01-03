@@ -280,17 +280,17 @@ const TimetableManagement: React.FC = () => {
                 <TableCell>
                   <Box>
                     <Typography variant="body2" fontWeight="bold">
-                      {session.course.code}
+                      {session.Course?.code || 'N/A'}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {session.course.title}
+                      {session.Course?.title || 'N/A'}
                     </Typography>
                   </Box>
                 </TableCell>
                 <TableCell>
-                  {session.lecturer.firstName} {session.lecturer.lastName}
+                  {session.User?.firstName || ''} {session.User?.lastName || ''}
                 </TableCell>
-                <TableCell>{session.venue.name}</TableCell>
+                <TableCell>{session.Venue?.name || 'N/A'}</TableCell>
                 <TableCell>{days[session.dayOfWeek]}</TableCell>
                 <TableCell>
                   {session.startTime} - {session.endTime}
