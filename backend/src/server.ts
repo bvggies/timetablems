@@ -19,6 +19,7 @@ import semestersRoutes from './routes/semesters.routes';
 import reportsRoutes from './routes/reports.routes';
 import examsRoutes from './routes/exams.routes';
 import supportRoutes from './routes/support.routes';
+import dashboardRoutes from './routes/dashboard.routes';
 
 const app = express();
 
@@ -228,6 +229,7 @@ app.use('/api/semesters', semestersRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/exams', examsRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 // 404 handler
 app.use((req: express.Request, res: express.Response) => {
