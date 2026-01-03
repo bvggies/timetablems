@@ -363,7 +363,11 @@ async function getLecturerWorkloadData(userId: string, semesterId: string | unde
       ...(semesterId && { semesterId }),
     },
     include: {
-      Course: true,
+      Course: {
+        include: {
+          Department: true,
+        },
+      },
     },
   });
 
