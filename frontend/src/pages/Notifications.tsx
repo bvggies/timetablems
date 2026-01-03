@@ -46,6 +46,7 @@ const Notifications: React.FC = () => {
         throw error;
       }
     },
+    enabled: authService.isAuthenticated(),
     retry: (failureCount, error: any) => {
       // Don't retry on 401 errors
       if (error?.response?.status === 401) {

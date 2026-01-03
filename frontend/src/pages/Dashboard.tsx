@@ -52,10 +52,26 @@ const Dashboard: React.FC = () => {
   const { data: analytics, isLoading } = useQuery({
     queryKey: ['dashboard-analytics'],
     queryFn: async () => {
-      const response = await api.get('/dashboard/analytics');
-      return response.data;
+      try {
+        const response = await api.get('/dashboard/analytics');
+        return response.data;
+      } catch (error: any) {
+        // Handle 401 (unauthorized) gracefully
+        if (error.response?.status === 401) {
+          return null;
+        }
+        throw error;
+      }
     },
+    enabled: !!user && authService.isAuthenticated(),
     refetchInterval: 60000, // Refetch every minute for real-time data
+    retry: (failureCount, error: any) => {
+      // Don't retry on 401 errors
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   if (isLoading) {

@@ -59,6 +59,7 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
         throw error;
       }
     },
+    enabled: !!user && authService.isAuthenticated(),
     refetchInterval: 30000,
     retry: (failureCount, error: any) => {
       // Don't retry on 401 errors
