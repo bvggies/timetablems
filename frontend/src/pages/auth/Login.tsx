@@ -11,10 +11,10 @@ import {
   useTheme,
   alpha,
 } from '@mui/material';
-import { School } from '@mui/icons-material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
 import { authService, LoginCredentials } from '../../services/auth';
+import Logo from '../../components/Logo';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -72,24 +72,29 @@ const Login: React.FC = () => {
         >
           <Box
             sx={{
-              mb: 4,
+              mb: 5,
               textAlign: 'center',
             }}
           >
             <Box
               sx={{
-                width: 80,
-                height: 80,
-                borderRadius: 3,
-                background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
+                mb: 3,
                 display: 'flex',
-                alignItems: 'center',
                 justifyContent: 'center',
-                margin: '0 auto 16px',
-                boxShadow: '0 10px 25px rgba(99, 102, 241, 0.4)',
               }}
             >
-              <School sx={{ fontSize: 40, color: 'white' }} />
+              <Box
+                sx={{
+                  p: 2,
+                  borderRadius: 4,
+                  background: alpha(theme.palette.common.white, 0.15),
+                  backdropFilter: 'blur(10px)',
+                  border: `1px solid ${alpha(theme.palette.common.white, 0.2)}`,
+                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+                }}
+              >
+                <Logo size={120} variant="icon" color="white" />
+              </Box>
             </Box>
             <Typography 
               component="h1" 
@@ -100,7 +105,7 @@ const Login: React.FC = () => {
                 mb: 1,
               }}
             >
-              PUG Timetable
+              PUG Timetable System
             </Typography>
             <Typography 
               variant="body1" 

@@ -27,6 +27,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import api from '../../services/api';
 import { authService } from '../../services/auth';
+import Logo from '../Logo';
 
 interface TopbarProps {
   onMenuClick: () => void;
@@ -95,19 +96,34 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
         >
           <MenuIcon />
         </IconButton>
-        <Typography 
-          variant="h6" 
-          noWrap 
-          component="div" 
-          sx={{ 
+        <Box
+          sx={{
             flexGrow: 1,
-            fontWeight: 700,
-            fontSize: { xs: '1rem', sm: '1.25rem' },
-            letterSpacing: '-0.02em',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.5,
           }}
         >
-          PUG Timetable System
-        </Typography>
+          <Logo size={28} variant="compact" color="white" />
+          <Box
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+            }}
+          >
+            <Typography 
+              variant="h6" 
+              component="div" 
+              sx={{ 
+                fontWeight: 700,
+                fontSize: '1rem',
+                letterSpacing: '-0.02em',
+                color: 'white',
+              }}
+            >
+              Timetable System
+            </Typography>
+          </Box>
+        </Box>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
           <Tooltip title={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}>
             <FormControlLabel

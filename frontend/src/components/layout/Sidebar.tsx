@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/auth';
+import Logo from '../Logo';
 
 const drawerWidth = 280;
 
@@ -82,36 +83,56 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         sx={{
           background: 'linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%)',
           color: 'white',
-          minHeight: '80px !important',
+          minHeight: '100px !important',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'space-between',
+          justifyContent: 'center',
           px: 2,
+          py: 2,
+          gap: 1.5,
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Avatar
-            sx={{
-              width: 40,
-              height: 40,
-              background: 'rgba(255, 255, 255, 0.2)',
-              color: 'white',
-              fontWeight: 600,
-            }}
-          >
-            {user?.firstName?.[0] || 'P'}
-          </Avatar>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Logo size={32} variant="icon" color="white" />
           <Box>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-              {user?.firstName} {user?.lastName}
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, lineHeight: 1.2, fontSize: '0.875rem' }}>
+              PUG Timetable
             </Typography>
-            <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.75rem' }}>
+            <Typography variant="caption" sx={{ opacity: 0.9, fontSize: '0.7rem' }}>
               {user?.role || 'User'}
             </Typography>
           </Box>
         </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: '100%', justifyContent: 'center' }}>
+          <Avatar
+            sx={{
+              width: 32,
+              height: 32,
+              background: 'rgba(255, 255, 255, 0.2)',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '0.875rem',
+            }}
+          >
+            {user?.firstName?.[0] || 'U'}
+          </Avatar>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2, fontSize: '0.8125rem' }} noWrap>
+              {user?.firstName} {user?.lastName}
+            </Typography>
+          </Box>
+        </Box>
         {isMobile && (
-          <IconButton onClick={onClose} sx={{ color: 'white' }}>
+          <IconButton 
+            onClick={onClose} 
+            sx={{ 
+              color: 'white',
+              position: 'absolute',
+              top: 8,
+              right: 8,
+            }}
+          >
             <ChevronLeft />
           </IconButton>
         )}

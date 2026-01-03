@@ -1,0 +1,29 @@
+<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Calendar base -->
+  <rect x="20" y="30" width="80" height="70" rx="8" fill="#6366f1" opacity="0.1"/>
+  <rect x="20" y="30" width="80" height="70" rx="8" stroke="#6366f1" stroke-width="3"/>
+  
+  <!-- Calendar header -->
+  <rect x="20" y="30" width="80" height="25" rx="8" fill="#6366f1"/>
+  
+  <!-- Calendar rings/binding -->
+  <circle cx="35" cy="42.5" r="3" fill="white"/>
+  <circle cx="85" cy="42.5" r="3" fill="white"/>
+  
+  <!-- Calendar grid lines -->
+  <line x1="40" y1="55" x2="40" y2="100" stroke="#6366f1" stroke-width="2" opacity="0.3"/>
+  <line x1="60" y1="55" x2="60" y2="100" stroke="#6366f1" stroke-width="2" opacity="0.3"/>
+  <line x1="80" y1="55" x2="80" y2="100" stroke="#6366f1" stroke-width="2" opacity="0.3"/>
+  <line x1="20" y1="70" x2="100" y2="70" stroke="#6366f1" stroke-width="2" opacity="0.3"/>
+  <line x1="20" y1="85" x2="100" y2="85" stroke="#6366f1" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Time indicators -->
+  <circle cx="30" cy="62.5" r="4" fill="#6366f1"/>
+  <circle cx="50" cy="77.5" r="4" fill="#6366f1"/>
+  <circle cx="70" cy="62.5" r="4" fill="#6366f1"/>
+  <circle cx="90" cy="77.5" r="4" fill="#6366f1"/>
+  
+  <!-- PUG text -->
+  <text x="60" y="20" fontSize="16" fontWeight="700" fill="#6366f1" textAnchor="middle" fontFamily="Inter, sans-serif">PUG</text>
+</svg>
+
