@@ -21,6 +21,7 @@ import {
   AttachMoney,
   PersonAdd,
   Folder,
+  LocationOn,
   Refresh,
   AdminPanelSettings,
   Person,
@@ -190,7 +191,7 @@ const Dashboard: React.FC = () => {
         {
           title: 'Total Venues',
           value: analytics.stats.totalVenues || 0,
-          icon: <Folder />,
+          icon: <LocationOn />,
           color: '#ec4899',
           change: null,
           changePositive: null,
