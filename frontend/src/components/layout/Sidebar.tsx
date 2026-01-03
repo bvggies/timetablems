@@ -60,9 +60,11 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
 
   const menuItems = useMemo(() => [
     { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
-    { text: 'Timetable', icon: <CalendarToday />, path: '/timetable' },
     ...(user?.role === 'ADMIN'
       ? [{ text: 'Manage Timetable', icon: <CalendarToday />, path: '/timetable/manage' }]
+      : []),
+    ...(user?.role !== 'ADMIN'
+      ? [{ text: 'Timetable', icon: <CalendarToday />, path: '/timetable' }]
       : []),
     ...(user?.role === 'LECTURER'
       ? [{ text: 'My Timetable Sessions', icon: <CalendarToday />, path: '/timetable/my-sessions' }]
