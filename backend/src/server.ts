@@ -37,7 +37,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', apiRateLimiter);
 
 // Health check
-app.get('/health', (req, res) => {
+app.get('/health', (req: express.Request, res: express.Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
@@ -57,7 +57,7 @@ app.use('/api/exams', examsRoutes);
 app.use('/api/support', supportRoutes);
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: express.Request, res: express.Response) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
