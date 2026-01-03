@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Drawer,
   List,
@@ -14,6 +14,8 @@ import {
   Box,
   Typography,
   Avatar,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import {
   Dashboard,
@@ -35,6 +37,7 @@ import {
   Sync,
   Person,
   Settings,
+  Search,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../services/auth';
@@ -53,8 +56,9 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const user = authService.getStoredUser();
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const menuItems = [
+  const menuItems = useMemo(() => [
     { text: 'Dashboard', icon: <Dashboard />, path: '/dashboard' },
     { text: 'Timetable', icon: <CalendarToday />, path: '/timetable' },
     ...(user?.role === 'ADMIN'
@@ -69,6 +73,9 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
       : []),
     ...(user?.role === 'ADMIN' || user?.role === 'LECTURER'
       ? [{ text: 'Students', icon: <People />, path: '/students' }]
+      : []),
+    ...(user?.role === 'ADMIN'
+      ? [{ text: 'Lecturers', icon: <Person />, path: '/lecturers' }]
       : []),
     ...(user?.role === 'LECTURER'
       ? [{ text: 'My Course Students', icon: <People />, path: '/courses/my-students' }]
@@ -98,7 +105,18 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     { text: 'Help & FAQ', icon: <Help />, path: '/help' },
     { text: 'Profile', icon: <Person />, path: '/profile' },
     { text: 'Settings', icon: <Settings />, path: '/settings' },
-  ];
+  ], [user?.role]);
+
+  // Filter menu items based on search term
+  const filteredMenuItems = useMemo(() => {
+    if (!searchTerm.trim()) {
+      return menuItems;
+    }
+    const searchLower = searchTerm.toLowerCase();
+    return menuItems.filter((item) =>
+      item.text.toLowerCase().includes(searchLower)
+    );
+  }, [menuItems, searchTerm]);
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -168,8 +186,48 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
         )}
       </Toolbar>
       <Divider />
+      {/* Search Bar */}
+      <Box sx={{ px: 2, py: 2 }}>
+        <TextField
+          fullWidth
+          size="small"
+          placeholder="Search menu..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <Search sx={{ fontSize: 18, color: 'text.secondary' }} />
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            '& .MuiOutlinedInput-root': {
+              borderRadius: 2,
+              backgroundColor: theme.palette.mode === 'light' 
+                ? 'rgba(0, 0, 0, 0.02)' 
+                : 'rgba(255, 255, 255, 0.05)',
+              '& fieldset': {
+                borderColor: theme.palette.mode === 'light' 
+                  ? 'rgba(0, 0, 0, 0.08)' 
+                  : 'rgba(255, 255, 255, 0.1)',
+              },
+              '&:hover fieldset': {
+                borderColor: theme.palette.mode === 'light' 
+                  ? 'rgba(0, 0, 0, 0.15)' 
+                  : 'rgba(255, 255, 255, 0.2)',
+              },
+              '&.Mui-focused fieldset': {
+                borderColor: theme.palette.primary.main,
+              },
+            },
+          }}
+        />
+      </Box>
+      <Divider />
       <List sx={{ px: 1.5, py: 2 }}>
-        {menuItems.map((item) => {
+        {filteredMenuItems.length > 0 ? (
+          filteredMenuItems.map((item) => {
           const isSelected = location.pathname === item.path;
           return (
             <ListItem key={item.text} disablePadding sx={{ mb: 0.5 }}>
@@ -219,7 +277,14 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
               </ListItemButton>
             </ListItem>
           );
-        })}
+          })
+        ) : (
+          <Box sx={{ px: 2, py: 4, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary">
+              No menu items found
+            </Typography>
+          </Box>
+        )}
       </List>
     </>
   );

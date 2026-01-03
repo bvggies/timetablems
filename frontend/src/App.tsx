@@ -32,7 +32,7 @@ import SystemHealth from './pages/admin/SystemHealth';
 import Integrations from './pages/admin/Integrations';
 import LecturerTimetable from './pages/LecturerTimetable';
 import LecturerStudents from './pages/LecturerStudents';
-import { CircularProgress, Box } from '@mui/material';
+import Lecturers from './pages/Lecturers';
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(
@@ -74,6 +74,7 @@ function App() {
                       <Route path="/help" element={<Help />} />
                       <Route path="/notifications" element={<Notifications />} />
                       <Route path="/students" element={<Students />} />
+                      <Route path="/lecturers" element={<Lecturers />} />
                       <Route path="/attendance" element={<Attendance />} />
                       <Route path="/calendar" element={<CalendarPage />} />
                       <Route path="/resources" element={<ResourceBooking />} />
