@@ -45,10 +45,25 @@ const Topbar: React.FC<TopbarProps> = ({ onMenuClick, onThemeToggle, isDarkMode 
   const { data: unreadCount } = useQuery({
     queryKey: ['notifications', 'unread-count'],
     queryFn: async () => {
-      const response = await api.get('/notifications/unread-count');
-      return response.data;
+      try {
+        const response = await api.get('/notifications/unread-count');
+        return response.data;
+      } catch (error: any) {
+        // Handle 401 (unauthorized) gracefully - user might not be logged in
+        if (error.response?.status === 401) {
+          return { count: 0 };
+        }
+        throw error;
+      }
     },
     refetchInterval: 30000,
+    retry: (failureCount, error: any) => {
+      // Don't retry on 401 errors
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
+    },
   });
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {

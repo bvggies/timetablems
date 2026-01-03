@@ -35,8 +35,23 @@ const Notifications: React.FC = () => {
   const { data: unreadCount } = useQuery({
     queryKey: ['notifications', 'unread-count'],
     queryFn: async () => {
-      const response = await api.get('/notifications/unread-count');
-      return response.data;
+      try {
+        const response = await api.get('/notifications/unread-count');
+        return response.data;
+      } catch (error: any) {
+        // Handle 401 (unauthorized) gracefully
+        if (error.response?.status === 401) {
+          return { count: 0 };
+        }
+        throw error;
+      }
+    },
+    retry: (failureCount, error: any) => {
+      // Don't retry on 401 errors
+      if (error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 
