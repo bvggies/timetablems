@@ -98,8 +98,24 @@ const TimetableManagement: React.FC = () => {
   const { data: users } = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const response = await api.get('/users?role=LECTURER');
-      return response.data;
+      try {
+        const response = await api.get('/users', { params: { role: 'LECTURER' } });
+        return response.data;
+      } catch (error: any) {
+        // Handle 403 (forbidden) gracefully
+        if (error.response?.status === 403 || error.response?.status === 401) {
+          return [];
+        }
+        throw error;
+      }
+    },
+    enabled: authService.isAuthenticated(),
+    retry: (failureCount, error: any) => {
+      // Don't retry on 403/401 errors
+      if (error?.response?.status === 403 || error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 

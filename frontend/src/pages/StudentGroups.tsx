@@ -48,8 +48,24 @@ const StudentGroups: React.FC = () => {
   const { data: students } = useQuery({
     queryKey: ['students'],
     queryFn: async () => {
-      const res = await api.get('/users', { params: { role: 'STUDENT' } });
-      return res.data;
+      try {
+        const res = await api.get('/users', { params: { role: 'STUDENT' } });
+        return res.data;
+      } catch (error: any) {
+        // Handle 403 (forbidden) gracefully - lecturers can't access this endpoint
+        if (error.response?.status === 403 || error.response?.status === 401) {
+          return [];
+        }
+        throw error;
+      }
+    },
+    enabled: user?.role === 'ADMIN', // Only admins can access this endpoint
+    retry: (failureCount, error: any) => {
+      // Don't retry on 403/401 errors
+      if (error?.response?.status === 403 || error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 

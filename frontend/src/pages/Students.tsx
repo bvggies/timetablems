@@ -22,13 +22,29 @@ const Students: React.FC = () => {
   const { data: students, isLoading } = useQuery({
     queryKey: ['students', searchTerm],
     queryFn: async () => {
-      const response = await api.get('/users', {
-        params: {
-          role: 'STUDENT',
-          search: searchTerm || undefined,
-        },
-      });
-      return response.data;
+      try {
+        const response = await api.get('/users', {
+          params: {
+            role: 'STUDENT',
+            search: searchTerm || undefined,
+          },
+        });
+        return response.data;
+      } catch (error: any) {
+        // Handle 403 (forbidden) gracefully - lecturers can't access this endpoint
+        if (error.response?.status === 403 || error.response?.status === 401) {
+          return [];
+        }
+        throw error;
+      }
+    },
+    enabled: authService.isAuthenticated(),
+    retry: (failureCount, error: any) => {
+      // Don't retry on 403/401 errors
+      if (error?.response?.status === 403 || error?.response?.status === 401) {
+        return false;
+      }
+      return failureCount < 3;
     },
   });
 
