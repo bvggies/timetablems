@@ -30,6 +30,8 @@ import Settings from './pages/Settings';
 import TimetableVersions from './pages/admin/TimetableVersions';
 import SystemHealth from './pages/admin/SystemHealth';
 import Integrations from './pages/admin/Integrations';
+import LecturerTimetable from './pages/LecturerTimetable';
+import LecturerStudents from './pages/LecturerStudents';
 import { CircularProgress, Box } from '@mui/material';
 
 function App() {
@@ -61,6 +63,8 @@ function App() {
                       <Route path="/dashboard" element={<Dashboard />} />
                       <Route path="/timetable" element={<Timetable />} />
                       <Route path="/timetable/manage" element={<TimetableManagement />} />
+                      <Route path="/timetable/my-sessions" element={<LecturerTimetable />} />
+                      <Route path="/courses/my-students" element={<LecturerStudents />} />
                       <Route path="/courses" element={<Courses />} />
                       <Route path="/courses/register" element={<StudentCourseRegistration />} />
                       <Route path="/venues" element={<Venues />} />

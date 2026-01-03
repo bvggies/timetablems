@@ -301,6 +301,15 @@ const Dashboard: React.FC = () => {
         ))}
       </Grid>
 
+      {/* Next Class Widget - For Students and Lecturers */}
+      {(userRole === 'STUDENT' || userRole === 'LECTURER') && (
+        <Grid container spacing={3} sx={{ mb: 3 }}>
+          <Grid item xs={12} md={6} lg={4}>
+            <NextClassWidget />
+          </Grid>
+        </Grid>
+      )}
+
       {/* Charts Row */}
       <Grid container spacing={3} sx={{ mb: 3 }}>
         {/* Schedule Overview Chart */}

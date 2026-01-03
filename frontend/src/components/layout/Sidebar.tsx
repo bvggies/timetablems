@@ -60,12 +60,18 @@ const Sidebar: React.FC<SidebarProps> = ({ open, onClose }) => {
     ...(user?.role === 'ADMIN'
       ? [{ text: 'Manage Timetable', icon: <CalendarToday />, path: '/timetable/manage' }]
       : []),
+    ...(user?.role === 'LECTURER'
+      ? [{ text: 'My Timetable Sessions', icon: <CalendarToday />, path: '/timetable/my-sessions' }]
+      : []),
     { text: 'Courses', icon: <School />, path: '/courses' },
     ...(user?.role === 'STUDENT'
       ? [{ text: 'Register Courses', icon: <School />, path: '/courses/register' }]
       : []),
     ...(user?.role === 'ADMIN' || user?.role === 'LECTURER'
       ? [{ text: 'Students', icon: <People />, path: '/students' }]
+      : []),
+    ...(user?.role === 'LECTURER'
+      ? [{ text: 'My Course Students', icon: <People />, path: '/courses/my-students' }]
       : []),
     ...(user?.role === 'ADMIN' || user?.role === 'LECTURER'
       ? [{ text: 'Attendance', icon: <CheckCircle />, path: '/attendance' }]

@@ -93,7 +93,7 @@ const Announcements: React.FC = () => {
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h4">Announcements</Typography>
-        {user?.role === 'ADMIN' && (
+        {(user?.role === 'ADMIN' || user?.role === 'LECTURER') && (
           <Button
             variant="contained"
             startIcon={<Add />}

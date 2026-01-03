@@ -12,7 +12,7 @@ import {
   rollbackTimetable,
 } from '../controllers/timetable.controller';
 import { authenticate } from '../middleware/auth';
-import { requireAdmin, requireRole } from '../middleware/rbac';
+import { requireAdmin, requireLecturer } from '../middleware/rbac';
 
 const router = Router();
 
@@ -20,11 +20,13 @@ router.get('/', authenticate, getTimetable);
 router.get('/next-class', authenticate, getNextClass);
 router.get('/versions', authenticate, requireAdmin, getTimetableVersions);
 router.post('/rollback', authenticate, requireAdmin, rollbackTimetable);
-router.post('/sessions', authenticate, requireAdmin, createSession);
-router.put('/sessions/:id', authenticate, requireAdmin, updateSession);
-router.delete('/sessions/:id', authenticate, requireAdmin, deleteSession);
+// Allow lecturers to create/update/delete their own sessions
+router.post('/sessions', authenticate, requireLecturer, createSession);
+router.put('/sessions/:id', authenticate, requireLecturer, updateSession);
+router.delete('/sessions/:id', authenticate, requireLecturer, deleteSession);
+// Admin-only routes
 router.post('/generate', authenticate, requireAdmin, generateTimetableHandler);
 router.post('/publish', authenticate, requireAdmin, publishTimetable);
-router.post('/check-conflicts', authenticate, requireAdmin, checkSessionConflicts);
+router.post('/check-conflicts', authenticate, requireLecturer, checkSessionConflicts);
 
 export default router;

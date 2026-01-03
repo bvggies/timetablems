@@ -80,6 +80,11 @@ export const getTimetable = async (req: Request, res: Response): Promise<void> =
 
 export const createSession = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
     const {
       courseId,
       lecturerId,
@@ -90,9 +95,34 @@ export const createSession = async (req: Request, res: Response): Promise<void> 
       endTime,
     } = req.body;
 
+    const user = req.user;
+    const finalLecturerId = lecturerId || user.userId;
+
+    // If lecturer, verify they're assigned to this course
+    if (user.role === 'LECTURER') {
+      const allocation = await prisma.courseAllocation.findFirst({
+        where: {
+          courseId,
+          lecturerId: user.userId,
+          ...(semesterId && { semesterId }),
+        },
+      });
+
+      if (!allocation) {
+        res.status(403).json({ error: 'Not authorized to create sessions for this course' });
+        return;
+      }
+
+      // Ensure lecturerId matches the logged-in lecturer
+      if (finalLecturerId !== user.userId) {
+        res.status(403).json({ error: 'Cannot create sessions for other lecturers' });
+        return;
+      }
+    }
+
     const conflicts = await checkConflicts(
       courseId,
-      lecturerId,
+      finalLecturerId,
       venueId,
       semesterId,
       dayOfWeek,
@@ -111,7 +141,7 @@ export const createSession = async (req: Request, res: Response): Promise<void> 
     const session = await prisma.timetableSession.create({
       data: {
         courseId,
-        lecturerId,
+        lecturerId: finalLecturerId,
         venueId,
         semesterId,
         dayOfWeek,
@@ -136,6 +166,11 @@ export const createSession = async (req: Request, res: Response): Promise<void> 
 
 export const updateSession = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
     const { id } = req.params;
     const {
       courseId,
@@ -147,14 +182,53 @@ export const updateSession = async (req: Request, res: Response): Promise<void> 
       endTime,
     } = req.body;
 
+    const user = req.user;
+
+    // Check if session exists and verify permissions
+    const existingSession = await prisma.timetableSession.findUnique({
+      where: { id },
+      include: { Course: true },
+    });
+
+    if (!existingSession) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    // If lecturer, verify they own this session or are assigned to the course
+    if (user.role === 'LECTURER') {
+      if (existingSession.lecturerId !== user.userId) {
+        res.status(403).json({ error: 'Not authorized to update this session' });
+        return;
+      }
+
+      // If courseId is being changed, verify lecturer is assigned to new course
+      if (courseId && courseId !== existingSession.courseId) {
+        const allocation = await prisma.courseAllocation.findFirst({
+          where: {
+            courseId,
+            lecturerId: user.userId,
+            ...(semesterId && { semesterId }),
+          },
+        });
+
+        if (!allocation) {
+          res.status(403).json({ error: 'Not authorized for this course' });
+          return;
+        }
+      }
+    }
+
+    const finalLecturerId = lecturerId || existingSession.lecturerId;
+
     const conflicts = await checkConflicts(
-      courseId,
-      lecturerId,
-      venueId,
-      semesterId,
-      dayOfWeek,
-      startTime,
-      endTime,
+      courseId || existingSession.courseId,
+      finalLecturerId,
+      venueId || existingSession.venueId,
+      semesterId || existingSession.semesterId,
+      dayOfWeek !== undefined ? dayOfWeek : existingSession.dayOfWeek,
+      startTime || existingSession.startTime,
+      endTime || existingSession.endTime,
       id
     );
 
@@ -169,13 +243,14 @@ export const updateSession = async (req: Request, res: Response): Promise<void> 
     const session = await prisma.timetableSession.update({
       where: { id },
       data: {
-        courseId,
-        lecturerId,
-        venueId,
-        semesterId,
-        dayOfWeek,
-        startTime,
-        endTime,
+        ...(courseId && { courseId }),
+        ...(lecturerId && { lecturerId: finalLecturerId }),
+        ...(venueId && { venueId }),
+        ...(semesterId && { semesterId }),
+        ...(dayOfWeek !== undefined && { dayOfWeek }),
+        ...(startTime && { startTime }),
+        ...(endTime && { endTime }),
+        updatedAt: new Date(),
       },
       include: {
         Course: true,
@@ -192,7 +267,30 @@ export const updateSession = async (req: Request, res: Response): Promise<void> 
 
 export const deleteSession = async (req: Request, res: Response): Promise<void> => {
   try {
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
     const { id } = req.params;
+    const user = req.user;
+
+    // Check if session exists and verify permissions
+    const session = await prisma.timetableSession.findUnique({
+      where: { id },
+    });
+
+    if (!session) {
+      res.status(404).json({ error: 'Session not found' });
+      return;
+    }
+
+    // If lecturer, verify they own this session
+    if (user.role === 'LECTURER' && session.lecturerId !== user.userId) {
+      res.status(403).json({ error: 'Not authorized to delete this session' });
+      return;
+    }
+
     await prisma.timetableSession.delete({ where: { id } });
     res.json({ message: 'Session deleted successfully' });
   } catch (error: any) {
