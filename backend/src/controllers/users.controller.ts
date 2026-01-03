@@ -33,10 +33,10 @@ export const getUsers = async (req: Request, res: Response): Promise<void> => {
         status: true,
         departmentId: true,
         levelId: true,
-        department: {
+        Department: {
           select: { id: true, code: true, name: true },
         },
-        level: {
+        Level: {
           select: { id: true, code: true, name: true },
         },
         createdAt: true,
@@ -68,10 +68,10 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
         status: true,
         departmentId: true,
         levelId: true,
-        department: {
+        Department: {
           select: { id: true, code: true, name: true },
         },
-        level: {
+        Level: {
           select: { id: true, code: true, name: true },
         },
         createdAt: true,

@@ -8,22 +8,35 @@ export interface TokenPayload {
 }
 
 export const generateAccessToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, env.JWT_SECRET, {
-    expiresIn: env.JWT_EXPIRES_IN,
-  });
+  const secret = env.JWT_SECRET;
+  if (!secret || secret === 'default-secret-change-in-production') {
+    throw new Error('JWT_SECRET is not configured');
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return jwt.sign(payload, secret, { expiresIn: env.JWT_EXPIRES_IN } as any);
 };
 
 export const generateRefreshToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, env.JWT_REFRESH_SECRET, {
-    expiresIn: env.JWT_REFRESH_EXPIRES_IN,
-  });
+  const secret = env.JWT_REFRESH_SECRET;
+  if (!secret || secret === 'default-refresh-secret-change-in-production') {
+    throw new Error('JWT_REFRESH_SECRET is not configured');
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return jwt.sign(payload, secret, { expiresIn: env.JWT_REFRESH_EXPIRES_IN } as any);
 };
 
 export const verifyAccessToken = (token: string): TokenPayload => {
-  return jwt.verify(token, env.JWT_SECRET) as TokenPayload;
+  const secret = env.JWT_SECRET;
+  if (!secret || secret === 'default-secret-change-in-production') {
+    throw new Error('JWT_SECRET is not configured');
+  }
+  return jwt.verify(token, secret) as TokenPayload;
 };
 
 export const verifyRefreshToken = (token: string): TokenPayload => {
-  return jwt.verify(token, env.JWT_REFRESH_SECRET) as TokenPayload;
+  const secret = env.JWT_REFRESH_SECRET;
+  if (!secret || secret === 'default-refresh-secret-change-in-production') {
+    throw new Error('JWT_REFRESH_SECRET is not configured');
+  }
+  return jwt.verify(token, secret) as TokenPayload;
 };
-

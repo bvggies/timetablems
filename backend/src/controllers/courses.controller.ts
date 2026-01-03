@@ -19,10 +19,10 @@ export const getCourses = async (req: Request, res: Response): Promise<void> => 
     const courses = await prisma.course.findMany({
       where,
       include: {
-        department: {
+        Department: {
           select: { id: true, code: true, name: true },
         },
-        level: {
+        Level: {
           select: { id: true, code: true, name: true },
         },
       },
@@ -41,8 +41,8 @@ export const createCourse = async (req: Request, res: Response): Promise<void> =
     const course = await prisma.course.create({
       data: req.body,
       include: {
-        department: true,
-        level: true,
+        Department: true,
+        Level: true,
       },
     });
     res.status(201).json(course);
@@ -59,8 +59,8 @@ export const updateCourse = async (req: Request, res: Response): Promise<void> =
       where: { id },
       data: req.body,
       include: {
-        department: true,
-        level: true,
+        Department: true,
+        Level: true,
       },
     });
     res.json(course);

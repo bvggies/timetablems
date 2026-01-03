@@ -52,8 +52,8 @@ export const getTimetable = async (req: Request, res: Response): Promise<void> =
       include: {
         Course: {
           include: {
-            department: true,
-            level: true,
+            Department: true,
+            Level: true,
           },
         },
         User: {
@@ -122,11 +122,12 @@ export const createSession = async (req: Request, res: Response): Promise<void> 
         endTime,
         status: 'DRAFT',
         version: 1,
+        updatedAt: new Date(),
       },
       include: {
-        course: true,
-        lecturer: true,
-        venue: true,
+        Course: true,
+        User: true,
+        Venue: true,
       },
     });
     res.status(201).json(session);
@@ -181,9 +182,9 @@ export const updateSession = async (req: Request, res: Response): Promise<void> 
         endTime,
       },
       include: {
-        course: true,
-        lecturer: true,
-        venue: true,
+        Course: true,
+        User: true,
+        Venue: true,
       },
     });
     res.json(session);

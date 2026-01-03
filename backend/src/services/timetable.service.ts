@@ -126,10 +126,10 @@ export const checkConflicts = async (
   // Check student conflicts (students registered in multiple courses)
   const course = await prisma.course.findUnique({
     where: { id: courseId },
-    include: {
-      department: true,
-      level: true,
-    },
+      include: {
+        Department: true,
+        Level: true,
+      },
   });
 
   if (course) {
@@ -177,7 +177,7 @@ export const checkConflicts = async (
         include: {
           Course: {
             include: {
-              registrations: {
+              StudentCourseRegistration: {
                 where: {
                   studentId: { in: studentIds },
                   semesterId,
@@ -190,7 +190,7 @@ export const checkConflicts = async (
       });
 
       for (const conflict of studentConflicts) {
-        const overlappingStudents = conflict.Course.registrations.length;
+        const overlappingStudents = conflict.Course.StudentCourseRegistration.length;
         if (overlappingStudents > 0) {
           conflicts.push({
             type: 'STUDENT',
@@ -227,9 +227,9 @@ export const generateTimetable = async (
       include: {
         Course: {
           include: {
-            department: true,
-            level: true,
-            registrations: {
+            Department: true,
+            Level: true,
+            StudentCourseRegistration: {
               where: {
                 semesterId: options.semesterId,
                 droppedAt: null,
@@ -239,7 +239,7 @@ export const generateTimetable = async (
         },
         User: {
           include: {
-            lecturerAvailability: true,
+            LecturerAvailability: true,
           },
         },
       },
@@ -281,7 +281,7 @@ export const generateTimetable = async (
     for (const allocation of allocations) {
       const course = allocation.Course;
       const lecturer = allocation.User;
-      const expectedSize = course.registrations.length || course.expectedSize;
+      const expectedSize = course.StudentCourseRegistration.length || course.expectedSize;
 
       // Find suitable venue
       const suitableVenue = venues.find((v) => v.capacity >= expectedSize);
@@ -293,7 +293,7 @@ export const generateTimetable = async (
       }
 
       // Check lecturer availability
-      const lecturerAvailabilities = lecturer.lecturerAvailability.filter(
+      const lecturerAvailabilities = lecturer.LecturerAvailability.filter(
         (avail: { dayOfWeek: number }) => options.daysOfWeek.includes(avail.dayOfWeek)
       );
 

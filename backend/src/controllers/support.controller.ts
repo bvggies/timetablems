@@ -24,7 +24,7 @@ export const getTickets = async (req: Request, res: Response): Promise<void> => 
     const tickets = await prisma.supportTicket.findMany({
       where,
       include: {
-        user: {
+        User: {
           select: {
             id: true,
             firstName: true,
@@ -55,7 +55,7 @@ export const getTicket = async (req: Request, res: Response): Promise<void> => {
     const ticket = await prisma.supportTicket.findUnique({
       where: { id },
       include: {
-        user: {
+        User: {
           select: {
             id: true,
             firstName: true,
@@ -102,9 +102,10 @@ export const createTicket = async (req: Request, res: Response): Promise<void> =
         message,
         screenshot,
         status: 'OPEN',
+        updatedAt: new Date(),
       },
       include: {
-        user: {
+        User: {
           select: {
             id: true,
             firstName: true,
@@ -149,7 +150,7 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
       where: { id },
       data: updateData,
       include: {
-        user: {
+        User: {
           select: {
             id: true,
             firstName: true,

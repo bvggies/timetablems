@@ -14,14 +14,14 @@ export const getExams = async (req: Request, res: Response): Promise<void> => {
     const exams = await prisma.examSession.findMany({
       where,
       include: {
-        course: {
+        Course: {
           include: {
-            department: true,
-            level: true,
+            Department: true,
+            Level: true,
           },
         },
-        venue: true,
-        semester: true,
+        Venue: true,
+        Semester: true,
       },
       orderBy: [
         { date: 'asc' },
@@ -41,8 +41,8 @@ export const createExam = async (req: Request, res: Response): Promise<void> => 
     const exam = await prisma.examSession.create({
       data: req.body,
       include: {
-        course: true,
-        venue: true,
+        Course: true,
+        Venue: true,
       },
     });
     res.status(201).json(exam);
@@ -59,8 +59,8 @@ export const updateExam = async (req: Request, res: Response): Promise<void> => 
       where: { id },
       data: req.body,
       include: {
-        course: true,
-        venue: true,
+        Course: true,
+        Venue: true,
       },
     });
     res.json(exam);

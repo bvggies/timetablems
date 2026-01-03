@@ -15,7 +15,7 @@ export const getOccupancyReport = async (req: Request, res: Response): Promise<v
         Venue: true,
         Course: {
           include: {
-            registrations: {
+            StudentCourseRegistration: {
               where: {
                 ...(semesterId && { semesterId: semesterId as string }),
                 droppedAt: null,
@@ -33,7 +33,7 @@ export const getOccupancyReport = async (req: Request, res: Response): Promise<v
       const venueId = session.venueId;
       const venueName = session.Venue.name;
       const capacity = session.Venue.capacity;
-      const registeredCount = session.Course.registrations.length || session.Course.expectedSize;
+      const registeredCount = session.Course.StudentCourseRegistration.length || session.Course.expectedSize;
 
       if (!venueOccupancy[venueId]) {
         venueOccupancy[venueId] = {
@@ -73,7 +73,7 @@ export const getWorkloadReport = async (req: Request, res: Response): Promise<vo
         ...(semesterId && { semesterId: semesterId as string }),
       },
       include: {
-        lecturer: {
+        User: {
           select: {
             id: true,
             firstName: true,
@@ -81,7 +81,7 @@ export const getWorkloadReport = async (req: Request, res: Response): Promise<vo
             email: true,
           },
         },
-        course: {
+        Course: {
           select: {
             id: true,
             code: true,
@@ -89,7 +89,7 @@ export const getWorkloadReport = async (req: Request, res: Response): Promise<vo
             credits: true,
           },
         },
-        semester: true,
+        Semester: true,
       },
     });
 
@@ -100,8 +100,8 @@ export const getWorkloadReport = async (req: Request, res: Response): Promise<vo
         status: 'PUBLISHED',
       },
       include: {
-        lecturer: true,
-        course: true,
+        User: true,
+        Course: true,
       },
     });
 
@@ -109,7 +109,7 @@ export const getWorkloadReport = async (req: Request, res: Response): Promise<vo
 
     allocations.forEach((allocation) => {
       const lecturerId = allocation.lecturerId;
-      const lecturer = allocation.lecturer;
+      const lecturer = allocation.User;
 
       if (!lecturerWorkload[lecturerId]) {
         lecturerWorkload[lecturerId] = {
@@ -124,7 +124,7 @@ export const getWorkloadReport = async (req: Request, res: Response): Promise<vo
       }
 
       lecturerWorkload[lecturerId].totalCourses += 1;
-      lecturerWorkload[lecturerId].totalCredits += allocation.course.credits;
+      lecturerWorkload[lecturerId].totalCredits += allocation.Course.credits;
     });
 
     // Count sessions

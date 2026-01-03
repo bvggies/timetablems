@@ -15,13 +15,13 @@ export const getRegistrations = async (req: Request, res: Response): Promise<voi
         droppedAt: null,
       },
       include: {
-        course: {
+        Course: {
           include: {
-            department: true,
-            level: true,
+            Department: true,
+            Level: true,
           },
         },
-        semester: true,
+        Semester: true,
       },
       orderBy: { registeredAt: 'desc' },
     });
@@ -64,8 +64,8 @@ export const registerCourse = async (req: Request, res: Response): Promise<void>
         semesterId,
       },
       include: {
-        course: true,
-        semester: true,
+        Course: true,
+        Semester: true,
       },
     });
 

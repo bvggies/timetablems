@@ -130,14 +130,14 @@ export const getUserById = async (userId: string) => {
       status: true,
       departmentId: true,
       levelId: true,
-      department: {
+      Department: {
         select: {
           id: true,
           code: true,
           name: true,
         },
       },
-      level: {
+      Level: {
         select: {
           id: true,
           code: true,

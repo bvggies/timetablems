@@ -153,6 +153,7 @@ export const notifyTimetableChange = async (
         Course: true,
         User: true,
         Semester: true,
+        Venue: true,
       },
     });
 
