@@ -195,3 +195,4 @@ const Integrations: React.FC = () => {
 
 export default Integrations;
 
+

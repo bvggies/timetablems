@@ -75,5 +75,9 @@ export const authService = {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   },
+
+  setStoredUser: (user: any) => {
+    localStorage.setItem('user', JSON.stringify(user));
+  },
 };
 

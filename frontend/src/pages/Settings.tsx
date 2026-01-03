@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Card,
@@ -36,18 +36,21 @@ const Settings: React.FC = () => {
       const res = await api.get('/api/notification-preferences/preferences');
       return res.data;
     },
-    onSuccess: (data) => {
-      setPreferences({
-        emailEnabled: data.emailEnabled,
-        smsEnabled: data.smsEnabled,
-        pushEnabled: data.pushEnabled,
-        timetableChanges: data.timetableChanges,
-        classReminders: data.classReminders,
-        announcements: data.announcements,
-        digestFrequency: data.digestFrequency,
-      });
-    },
   });
+
+  useEffect(() => {
+    if (currentPreferences) {
+      setPreferences({
+        emailEnabled: currentPreferences.emailEnabled,
+        smsEnabled: currentPreferences.smsEnabled,
+        pushEnabled: currentPreferences.pushEnabled,
+        timetableChanges: currentPreferences.timetableChanges,
+        classReminders: currentPreferences.classReminders,
+        announcements: currentPreferences.announcements,
+        digestFrequency: currentPreferences.digestFrequency,
+      });
+    }
+  }, [currentPreferences]);
 
   const updatePreferencesMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -204,4 +207,5 @@ const Settings: React.FC = () => {
 };
 
 export default Settings;
+
 

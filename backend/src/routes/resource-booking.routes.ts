@@ -13,3 +13,4 @@ router.delete('/bookings/:id', resourceBookingController.deleteBooking);
 
 export default router;
 
+

@@ -16,7 +16,7 @@ import api from '../services/api';
 import { authService } from '../services/auth';
 
 const Profile: React.FC = () => {
-  const { user, setUser } = useAuth();
+  const user = authService.getStoredUser();
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
@@ -40,7 +40,12 @@ const Profile: React.FC = () => {
       return res.data;
     },
     onSuccess: (data) => {
-      authService.setStoredUser(data);
+      // Update localStorage with new user data
+      const currentUser = authService.getStoredUser();
+      if (currentUser) {
+        const updatedUser = { ...currentUser, ...data };
+        authService.setStoredUser(updatedUser);
+      }
       queryClient.invalidateQueries({ queryKey: ['profile'] });
       setIsEditing(false);
     },
