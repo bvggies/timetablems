@@ -9,21 +9,23 @@ async function main() {
   // Create Departments
   const dept1 = await prisma.department.upsert({
     where: { code: 'CS' },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       code: 'CS',
       name: 'Computer Science',
       description: 'Department of Computer Science',
+      updatedAt: new Date(),
     },
   });
 
   const dept2 = await prisma.department.upsert({
     where: { code: 'EE' },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       code: 'EE',
       name: 'Electrical Engineering',
       description: 'Department of Electrical Engineering',
+      updatedAt: new Date(),
     },
   });
 
@@ -32,31 +34,34 @@ async function main() {
   // Create Levels
   const level1 = await prisma.level.upsert({
     where: { code: '100' },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       code: '100',
       name: 'Level 100',
       description: 'First Year',
+      updatedAt: new Date(),
     },
   });
 
   const level2 = await prisma.level.upsert({
     where: { code: '200' },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       code: '200',
       name: 'Level 200',
       description: 'Second Year',
+      updatedAt: new Date(),
     },
   });
 
   const level3 = await prisma.level.upsert({
     where: { code: '300' },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       code: '300',
       name: 'Level 300',
       description: 'Third Year',
+      updatedAt: new Date(),
     },
   });
 
@@ -91,36 +96,63 @@ async function main() {
 
   console.log(`✅ Semester created (${startDate.toISOString().split('T')[0]} to ${endDate.toISOString().split('T')[0]})`);
 
-  // Create Venues
-  const venue1 = await prisma.venue.create({
-    data: {
-      name: 'Main Hall A',
-      location: 'Building 1, Floor 2',
-      capacity: 200,
-      type: 'HALL',
-      resources: JSON.stringify(['projector', 'whiteboard', 'sound-system']),
-    },
-  });
+  // Create Venues (check if exists first, then create or update)
+  let venue1 = await prisma.venue.findFirst({ where: { name: 'Main Hall A' } });
+  if (!venue1) {
+    venue1 = await prisma.venue.create({
+      data: {
+        name: 'Main Hall A',
+        location: 'Building 1, Floor 2',
+        capacity: 200,
+        type: 'HALL',
+        resources: JSON.stringify(['projector', 'whiteboard', 'sound-system']),
+        updatedAt: new Date(),
+      },
+    });
+  } else {
+    await prisma.venue.update({
+      where: { id: venue1.id },
+      data: { updatedAt: new Date() },
+    });
+  }
 
-  const venue2 = await prisma.venue.create({
-    data: {
-      name: 'Lab 1',
-      location: 'Building 2, Floor 1',
-      capacity: 50,
-      type: 'LAB',
-      resources: JSON.stringify(['computers', 'projector']),
-    },
-  });
+  let venue2 = await prisma.venue.findFirst({ where: { name: 'Lab 1' } });
+  if (!venue2) {
+    venue2 = await prisma.venue.create({
+      data: {
+        name: 'Lab 1',
+        location: 'Building 2, Floor 1',
+        capacity: 50,
+        type: 'LAB',
+        resources: JSON.stringify(['computers', 'projector']),
+        updatedAt: new Date(),
+      },
+    });
+  } else {
+    await prisma.venue.update({
+      where: { id: venue2.id },
+      data: { updatedAt: new Date() },
+    });
+  }
 
-  const venue3 = await prisma.venue.create({
-    data: {
-      name: 'Seminar Room B',
-      location: 'Building 1, Floor 3',
-      capacity: 30,
-      type: 'SEMINAR',
-      resources: JSON.stringify(['projector', 'whiteboard']),
-    },
-  });
+  let venue3 = await prisma.venue.findFirst({ where: { name: 'Seminar Room B' } });
+  if (!venue3) {
+    venue3 = await prisma.venue.create({
+      data: {
+        name: 'Seminar Room B',
+        location: 'Building 1, Floor 3',
+        capacity: 30,
+        type: 'SEMINAR',
+        resources: JSON.stringify(['projector', 'whiteboard']),
+        updatedAt: new Date(),
+      },
+    });
+  } else {
+    await prisma.venue.update({
+      where: { id: venue3.id },
+      data: { updatedAt: new Date() },
+    });
+  }
 
   console.log('✅ Venues created');
 
@@ -310,11 +342,12 @@ async function main() {
         semesterId: semester.id,
       },
     },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       courseId: course1.id,
       lecturerId: lecturer1.id,
       semesterId: semester.id,
+      updatedAt: new Date(),
     },
   });
 
@@ -325,11 +358,12 @@ async function main() {
         semesterId: semester.id,
       },
     },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       courseId: course2.id,
       lecturerId: lecturer1.id,
       semesterId: semester.id,
+      updatedAt: new Date(),
     },
   });
 
@@ -340,11 +374,12 @@ async function main() {
         semesterId: semester.id,
       },
     },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       courseId: course3.id,
       lecturerId: lecturer2.id,
       semesterId: semester.id,
+      updatedAt: new Date(),
     },
   });
 
@@ -355,11 +390,12 @@ async function main() {
         semesterId: semester.id,
       },
     },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       courseId: course4.id,
       lecturerId: lecturer1.id,
       semesterId: semester.id,
+      updatedAt: new Date(),
     },
   });
 
@@ -370,11 +406,12 @@ async function main() {
         semesterId: semester.id,
       },
     },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       courseId: course5.id,
       lecturerId: lecturer1.id,
       semesterId: semester.id,
+      updatedAt: new Date(),
     },
   });
 
@@ -385,11 +422,12 @@ async function main() {
         semesterId: semester.id,
       },
     },
-    update: {},
+    update: { updatedAt: new Date() },
     create: {
       courseId: course6.id,
       lecturerId: lecturer2.id,
       semesterId: semester.id,
+      updatedAt: new Date(),
     },
   });
 
@@ -463,39 +501,47 @@ async function main() {
   console.log('✅ Student registrations created');
 
   // Create Lecturer Availability
+  const availabilityData = [
+    {
+      lecturerId: lecturer1.id,
+      dayOfWeek: 1, // Monday
+      startTime: '08:00',
+      endTime: '17:00',
+      updatedAt: new Date(),
+    },
+    {
+      lecturerId: lecturer1.id,
+      dayOfWeek: 2, // Tuesday
+      startTime: '08:00',
+      endTime: '17:00',
+      updatedAt: new Date(),
+    },
+    {
+      lecturerId: lecturer1.id,
+      dayOfWeek: 3, // Wednesday
+      startTime: '08:00',
+      endTime: '17:00',
+      updatedAt: new Date(),
+    },
+    {
+      lecturerId: lecturer2.id,
+      dayOfWeek: 1, // Monday
+      startTime: '09:00',
+      endTime: '16:00',
+      updatedAt: new Date(),
+    },
+    {
+      lecturerId: lecturer2.id,
+      dayOfWeek: 3, // Wednesday
+      startTime: '09:00',
+      endTime: '16:00',
+      updatedAt: new Date(),
+    },
+  ];
+
   await prisma.lecturerAvailability.createMany({
-    data: [
-      {
-        lecturerId: lecturer1.id,
-        dayOfWeek: 1, // Monday
-        startTime: '08:00',
-        endTime: '17:00',
-      },
-      {
-        lecturerId: lecturer1.id,
-        dayOfWeek: 2, // Tuesday
-        startTime: '08:00',
-        endTime: '17:00',
-      },
-      {
-        lecturerId: lecturer1.id,
-        dayOfWeek: 3, // Wednesday
-        startTime: '08:00',
-        endTime: '17:00',
-      },
-      {
-        lecturerId: lecturer2.id,
-        dayOfWeek: 1, // Monday
-        startTime: '09:00',
-        endTime: '16:00',
-      },
-      {
-        lecturerId: lecturer2.id,
-        dayOfWeek: 3, // Wednesday
-        startTime: '09:00',
-        endTime: '16:00',
-      },
-    ],
+    data: availabilityData,
+    skipDuplicates: true,
   });
 
   console.log('✅ Lecturer availability created');
@@ -520,6 +566,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Weekly lecture session',
+      updatedAt: new Date(),
     },
     {
       courseId: course2.id,
@@ -532,6 +579,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Lab session',
+      updatedAt: new Date(),
     },
     // CS202 - Object-Oriented Programming (Tuesday & Thursday)
     {
@@ -545,6 +593,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Weekly lecture',
+      updatedAt: new Date(),
     },
     {
       courseId: course5.id,
@@ -557,6 +606,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Practical session',
+      updatedAt: new Date(),
     },
     // CS101 - Intro to CS (Monday & Friday)
     {
@@ -570,6 +620,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Introduction lecture',
+      updatedAt: new Date(),
     },
     {
       courseId: course1.id,
@@ -582,6 +633,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Tutorial session',
+      updatedAt: new Date(),
     },
     // CS301 - Database Systems (Wednesday)
     {
@@ -595,6 +647,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Database systems lecture',
+      updatedAt: new Date(),
     },
     // EE101 - Intro to EE (Tuesday & Thursday)
     {
@@ -608,6 +661,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Electrical engineering basics',
+      updatedAt: new Date(),
     },
     {
       courseId: course3.id,
@@ -620,6 +674,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Lab session',
+      updatedAt: new Date(),
     },
     // EE201 - Circuit Analysis (Monday & Wednesday)
     {
@@ -633,6 +688,7 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Circuit analysis lecture',
+      updatedAt: new Date(),
     },
     {
       courseId: course6.id,
@@ -645,11 +701,13 @@ async function main() {
       status: 'PUBLISHED' as const,
       version: 1,
       notes: 'Practical circuit analysis',
+      updatedAt: new Date(),
     },
   ];
 
   await prisma.timetableSession.createMany({
     data: timetableSessions,
+    skipDuplicates: true,
   });
 
   console.log(`✅ ${timetableSessions.length} Timetable sessions created`);
@@ -670,8 +728,8 @@ async function main() {
       date: examDate1,
       startTime: '09:00',
       endTime: '12:00',
-      duration: 180, // 3 hours
       notes: 'Mid-term examination',
+      updatedAt: new Date(),
     },
     {
       courseId: course5.id,
@@ -680,8 +738,8 @@ async function main() {
       date: examDate1,
       startTime: '14:00',
       endTime: '17:00',
-      duration: 180,
       notes: 'Mid-term examination',
+      updatedAt: new Date(),
     },
     {
       courseId: course3.id,
@@ -690,8 +748,8 @@ async function main() {
       date: examDate1,
       startTime: '09:00',
       endTime: '12:00',
-      duration: 180,
       notes: 'Mid-term examination',
+      updatedAt: new Date(),
     },
     // Final exams
     {
@@ -701,8 +759,8 @@ async function main() {
       date: examDate2,
       startTime: '09:00',
       endTime: '12:00',
-      duration: 180,
       notes: 'Final examination',
+      updatedAt: new Date(),
     },
     {
       courseId: course5.id,
@@ -711,8 +769,8 @@ async function main() {
       date: examDate2,
       startTime: '14:00',
       endTime: '17:00',
-      duration: 180,
       notes: 'Final examination',
+      updatedAt: new Date(),
     },
     {
       courseId: course3.id,
@@ -721,8 +779,8 @@ async function main() {
       date: examDate2,
       startTime: '09:00',
       endTime: '12:00',
-      duration: 180,
       notes: 'Final examination',
+      updatedAt: new Date(),
     },
     {
       courseId: course6.id,
@@ -731,13 +789,14 @@ async function main() {
       date: examDate2,
       startTime: '14:00',
       endTime: '17:00',
-      duration: 180,
       notes: 'Final examination',
+      updatedAt: new Date(),
     },
   ];
 
   await prisma.examSession.createMany({
     data: examSessions,
+    skipDuplicates: true,
   });
 
   console.log(`✅ ${examSessions.length} Exam sessions created`);
