@@ -4,7 +4,13 @@ import { logger } from '../utils/logger';
 
 export const getCourses = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { departmentId, levelId, search } = req.query;
+    if (!req.user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
+    const { departmentId, levelId, search, lecturerId } = req.query;
+    const user = req.user;
     
     const where: any = {};
     if (departmentId) where.departmentId = departmentId as string;
@@ -14,6 +20,22 @@ export const getCourses = async (req: Request, res: Response): Promise<void> => 
         { code: { contains: search as string, mode: 'insensitive' } },
         { title: { contains: search as string, mode: 'insensitive' } },
       ];
+    }
+
+    // If lecturer, filter to only their assigned courses
+    if (user.role === 'LECTURER' || lecturerId) {
+      const lecturerIdToUse = lecturerId || user.userId;
+      const allocations = await prisma.courseAllocation.findMany({
+        where: { lecturerId: lecturerIdToUse as string },
+        select: { courseId: true },
+      });
+      const courseIds = allocations.map(a => a.courseId);
+      if (courseIds.length > 0) {
+        where.id = { in: courseIds };
+      } else {
+        res.json([]);
+        return;
+      }
     }
 
     const courses = await prisma.course.findMany({
