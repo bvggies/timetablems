@@ -12,8 +12,8 @@ export const getOccupancyReport = async (req: Request, res: Response): Promise<v
         status: 'PUBLISHED',
       },
       include: {
-        venue: true,
-        course: {
+        Venue: true,
+        Course: {
           include: {
             registrations: {
               where: {
@@ -31,9 +31,9 @@ export const getOccupancyReport = async (req: Request, res: Response): Promise<v
 
     sessions.forEach((session) => {
       const venueId = session.venueId;
-      const venueName = session.venue.name;
-      const capacity = session.venue.capacity;
-      const registeredCount = session.course.registrations.length || session.course.expectedSize;
+      const venueName = session.Venue.name;
+      const capacity = session.Venue.capacity;
+      const registeredCount = session.Course.registrations.length || session.Course.expectedSize;
 
       if (!venueOccupancy[venueId]) {
         venueOccupancy[venueId] = {

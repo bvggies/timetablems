@@ -180,11 +180,11 @@ export const notifyTimetableChange = async (
       switch (changeType) {
         case 'CREATED':
           title = 'New Class Scheduled';
-          message = `A new class for ${session.course.code} has been scheduled on ${getDayName(session.dayOfWeek)} from ${session.startTime} to ${session.endTime} at ${session.venue.name}.`;
+          message = `A new class for ${session.Course.code} has been scheduled on ${getDayName(session.dayOfWeek)} from ${session.startTime} to ${session.endTime} at ${session.Venue.name}.`;
           break;
         case 'UPDATED':
           title = 'Timetable Change';
-          message = `Your class ${session.course.code} has been updated.`;
+          message = `Your class ${session.Course.code} has been updated.`;
           if (changes?.venue) {
             message += ` New venue: ${changes.venue}.`;
           }
@@ -194,7 +194,7 @@ export const notifyTimetableChange = async (
           break;
         case 'CANCELLED':
           title = 'Class Cancelled';
-          message = `Your class ${session.course.code} scheduled on ${getDayName(session.dayOfWeek)} has been cancelled.`;
+          message = `Your class ${session.Course.code} scheduled on ${getDayName(session.dayOfWeek)} has been cancelled.`;
           break;
       }
 
@@ -211,8 +211,8 @@ export const notifyTimetableChange = async (
     // Notify lecturer
     await createNotification({
       recipientId: session.lecturerId,
-      title: `Timetable Change - ${session.course.code}`,
-      message: `Your class ${session.course.code} has been ${changeType.toLowerCase()}.`,
+      title: `Timetable Change - ${session.Course.code}`,
+      message: `Your class ${session.Course.code} has been ${changeType.toLowerCase()}.`,
       type: 'TIMETABLE_CHANGE',
       metadata: { sessionId, changeType },
       sendEmail: true,
