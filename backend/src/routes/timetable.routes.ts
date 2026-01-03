@@ -8,9 +8,11 @@ import {
   publishTimetable,
   checkSessionConflicts,
   getNextClass,
+  getTimetableVersions,
+  rollbackTimetable,
 } from '../controllers/timetable.controller';
 import { authenticate } from '../middleware/auth';
-import { requireAdmin } from '../middleware/rbac';
+import { requireAdmin, requireRole } from '../middleware/rbac';
 
 const router = Router();
 

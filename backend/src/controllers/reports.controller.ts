@@ -167,3 +167,108 @@ export const getUsageAnalytics = async (req: Request, res: Response): Promise<vo
   }
 };
 
+// Feature #9: Advanced Analytics - Heatmap data
+export const getVenueHeatmap = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { semesterId } = req.query;
+
+    const sessions = await prisma.timetableSession.findMany({
+      where: {
+        ...(semesterId && { semesterId: semesterId as string }),
+        status: 'PUBLISHED',
+      },
+      include: {
+        Venue: true,
+        Course: {
+          include: {
+            StudentCourseRegistration: {
+              where: {
+                ...(semesterId && { semesterId: semesterId as string }),
+                droppedAt: null,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    // Create heatmap data: venue x dayOfWeek x hour
+    const heatmap: { [key: string]: { [day: number]: { [hour: string]: number } } } = {};
+
+    sessions.forEach((session) => {
+      const venueId = session.Venue.id;
+      const day = session.dayOfWeek;
+      const [startHour] = session.startTime.split(':');
+      const [endHour] = session.endTime.split(':');
+
+      if (!heatmap[venueId]) {
+        heatmap[venueId] = {};
+      }
+      if (!heatmap[venueId][day]) {
+        heatmap[venueId][day] = {};
+      }
+
+      for (let hour = parseInt(startHour); hour < parseInt(endHour); hour++) {
+        const hourKey = `${hour}:00`;
+        heatmap[venueId][day][hourKey] = (heatmap[venueId][day][hourKey] || 0) + 1;
+      }
+    });
+
+    res.json(heatmap);
+  } catch (error: any) {
+    logger.error('Get venue heatmap error', error);
+    res.status(500).json({ error: 'Failed to generate heatmap' });
+  }
+};
+
+// Feature #9: Advanced Analytics - Trends
+export const getTrends = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { period = '6months' } = req.query;
+    const months = period === '6months' ? 6 : 12;
+
+    const startDate = new Date();
+    startDate.setMonth(startDate.getMonth() - months);
+
+    // Registration trends
+    const registrations = await prisma.studentCourseRegistration.findMany({
+      where: {
+        registeredAt: { gte: startDate },
+      },
+      orderBy: { registeredAt: 'asc' },
+    });
+
+    // Group by month
+    const trends: { [key: string]: { registrations: number; sessions: number } } = {};
+
+    registrations.forEach((reg) => {
+      const month = reg.registeredAt.toISOString().substring(0, 7); // YYYY-MM
+      if (!trends[month]) {
+        trends[month] = { registrations: 0, sessions: 0 };
+      }
+      trends[month].registrations += 1;
+    });
+
+    // Session creation trends
+    const sessions = await prisma.timetableSession.findMany({
+      where: {
+        createdAt: { gte: startDate },
+      },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    sessions.forEach((session) => {
+      const month = session.createdAt.toISOString().substring(0, 7);
+      if (!trends[month]) {
+        trends[month] = { registrations: 0, sessions: 0 };
+      }
+      trends[month].sessions += 1;
+    });
+
+    res.json(trends);
+  } catch (error: any) {
+    logger.error('Get trends error', error);
+    res.status(500).json({ error: 'Failed to get trends' });
+  }
+};
+
