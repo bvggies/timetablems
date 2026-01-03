@@ -6,7 +6,11 @@ import { createNotification } from '../services/notification.service';
 export const createAnnouncement = async (req: Request, res: Response) => {
   try {
     const { title, message, scope, departmentId, levelId } = req.body;
-    const userId = (req as any).user.id;
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
 
     const announcement = await prisma.announcement.create({
       data: {
@@ -80,8 +84,12 @@ export const createAnnouncement = async (req: Request, res: Response) => {
 export const getAnnouncements = async (req: Request, res: Response) => {
   try {
     const { scope, departmentId, levelId } = req.query;
-    const userId = (req as any).user.id;
-    const userRole = (req as any).user.role;
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const userRole = req.user?.role;
 
     // Get user's department and level
     const user = await prisma.user.findUnique({
@@ -95,24 +103,30 @@ export const getAnnouncements = async (req: Request, res: Response) => {
       where.scope = scope;
     }
 
-    if (departmentId) {
-      where.departmentId = departmentId as string;
-    } else if (userRole === 'STUDENT' && user?.departmentId) {
-      // Students see department and all-scope announcements
-      where.OR = [
-        { scope: 'ALL' },
-        { departmentId: user.departmentId },
-      ];
-    }
-
-    if (levelId) {
-      where.levelId = levelId as string;
-    } else if (userRole === 'STUDENT' && user?.levelId) {
-      // Students see level and all-scope announcements
-      where.OR = [
-        ...(where.OR || []),
-        { levelId: user.levelId },
-      ];
+    // For students, show announcements that match their department/level or are ALL scope
+    if (userRole === 'STUDENT') {
+      const orConditions: any[] = [{ scope: 'ALL' }];
+      
+      if (user?.departmentId) {
+        orConditions.push({ departmentId: user.departmentId });
+      }
+      if (user?.levelId) {
+        orConditions.push({ levelId: user.levelId });
+      }
+      
+      if (orConditions.length > 1) {
+        where.OR = orConditions;
+      } else {
+        where.scope = 'ALL';
+      }
+    } else {
+      // For lecturers and admins, apply filters if provided
+      if (departmentId) {
+        where.departmentId = departmentId as string;
+      }
+      if (levelId) {
+        where.levelId = levelId as string;
+      }
     }
 
     const announcements = await prisma.announcement.findMany({

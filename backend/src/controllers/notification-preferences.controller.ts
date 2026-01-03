@@ -4,7 +4,11 @@ import prisma from '../config/database';
 // Get user's notification preferences
 export const getPreferences = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
 
     let preferences = await prisma.notificationPreference.findUnique({
       where: { userId },
@@ -28,7 +32,11 @@ export const getPreferences = async (req: Request, res: Response) => {
 // Update notification preferences
 export const updatePreferences = async (req: Request, res: Response) => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     const {
       emailEnabled,
       smsEnabled,

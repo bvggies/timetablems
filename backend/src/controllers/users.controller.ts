@@ -170,7 +170,11 @@ export const deleteUser = async (req: Request, res: Response): Promise<void> => 
 // Get current user profile
 export const getCurrentUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -197,7 +201,11 @@ export const getCurrentUser = async (req: Request, res: Response): Promise<void>
 // Update current user profile
 export const updateCurrentUser = async (req: Request, res: Response): Promise<void> => {
   try {
-    const userId = (req as any).user.id;
+    const userId = req.user?.userId;
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     const { firstName, lastName, phone, profilePhoto, departmentId, levelId } = req.body;
 
     const user = await prisma.user.update({
